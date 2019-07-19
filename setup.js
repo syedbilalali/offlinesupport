@@ -42,6 +42,7 @@ function init(){
     window.tempRefund  = 0;
     window.TempTotalPay = 0;
     window.AppliedProdPromo = 0;
+    window.AppliedProdPromoID = 0;
     window.customerType = 'WALK_IN_CUSTOMER';
     window.TotalDiscount = 0;
     window.Products = [ {
@@ -224,7 +225,6 @@ function setHeader1(Products){
    }
 }
 function setDummyRow(ItemList , discOffer){
-
     console.log(" %c Product is Adding... " , "color:BLUE;");
     removeEmptyRow();
     var table1 = document.getElementById("CartTable");
@@ -314,12 +314,14 @@ function applyProductPromo(data){
     var table1 = document.getElementById("CartTable");
     var row1 = table1.rows;
     var discountPromoPrice = 0;
+    var temp_promotion_ID = 0 ; 
     alert("Product ID "+ productID1 +"Promotion ID " + row.cells[0].innerHTML +"\n Offer is " + row.cells[3].innerHTML);
     read("ProdOffers", productID1 , function(data){
 
         console.log(" Apply Promotion Offers Values -: " + JSON.stringify(data));
         prodOffers.push(JSON.stringify(data));
         console.log("Promotion ID "  + data.promotionID);
+        temp_promotion_ID = data.PromotionID;
         console.log("Buy  "  + data.Buy);
         console.log("Get  "  + data.Get);
         console.log("Additional Value   "  + data.AddtionalValue);
@@ -415,10 +417,17 @@ function applyProductPromo(data){
                 alert(" Special Price Promotion is Adding ");
                 current_row.cells[9].innerHTML = data.AddingPrice;
                 fillPayment();
-                offer_row.style.backgroundColor = "YELLOW";
-                offer_row.value = "Cancel Promotion";
-                alert(" Successfully Offer Applied !!! ");
-
+              //  offer_row.style.backgroundColor = "YELLOW";
+            //    offer_row.value = "Cancel Promotion";
+                var row =  offer_row.parentNode.parentNode;
+                var btn = row.cells[4].getElementsByTagName('input')[0];
+                btn.style.backgroundColor = "YELLOW";
+                btn.value = "Cancel Promo";
+                console.log(" Value is the " + btn);
+                row.cells[4].appendChild(btn);
+                console.log(" Successfully Offer Applied !!! Applied " + window.AppliedProdPromo + " Promotion " + window.AppliedProdPromoID + " Data Promoiton " + data.PromotionID + " Temp Promotion Id " + temp_promotion_ID);
+                window.AppliedProdPromo = 1;
+                window.AppliedProdPromoID = data.PromotionID;
             }
         }else {
             alert(" Offer Used ");
@@ -427,6 +436,7 @@ function applyProductPromo(data){
     });
     }else{
         alert(" Cancel the Promotion ... ");
+        
     }
 }
 function cancelAppliedProductPromo(){
@@ -501,30 +511,43 @@ function updateRow(){
 function offerClick(val){
     var row = val.parentNode.parentNode;
     var productID  = row.cells[1].innerHTML;
-    read("ProdOffers" ,  productID , function(data){
-         if(data != "No"){
-            var offertable = document.getElementById("gvBillTotal");
-                for(var i=1; i<offertable.rows.length; i++){
-                        offertable.deleteRow(i);
+    console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromo);
+    console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromoID);
+        read("ProdOffers" ,  productID , function(data){
+            if(data != "No"){
+               var offertable = document.getElementById("gvBillTotal");
+                   for(var i=1; i<offertable.rows.length; i++){
+                           offertable.deleteRow(i);
+               }
+               var row = offertable.insertRow(offertable.rows.length);
+               row.style.backgroundColor = "#FFF7E7";
+               row.style.color = "#8C4510";
+               var cell0 = row.insertCell(0);
+               var cell1 = row.insertCell(1);
+               var cell2 = row.insertCell(2);
+               var cell3 = row.insertCell(3);
+               var cell4 = row.insertCell(4);
+               cell0.innerHTML = data.PromotionID
+               cell1.innerHTML = data.Discount
+               cell2.innerHTML = data.FriendlyName;
+               cell3.innerHTML = data.Scheme;
+               console.log("After Offer Applied " + data.PromotionID + " Window Applied Offer ID " + window.AppliedProdPromoID );
+               if(window.AppliedProdPromo == 1 && window.AppliedProdPromoID == data.PromotionID){
+                     console.log(" After Applied  Cancel the Operation");
+                     cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Cancel Promo' onclick='applyProductPromo(this)' id='"+productID+"' style='background-color:YELLOW;'>";
+                     $('[data-popup="popup-4"]').fadeIn(350);
+                    }else if(window.AppliedProdPromo == 1 && window.AppliedProdPromoID != data.PromotionID ){
+                        cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Wait...' onclick='applyProductPromo(this)' id='"+productID+"' style='background-color:#FF9933;'>";
+                        $('[data-popup="popup-4"]').fadeIn(350);
+                    }else{
+                    console.log("Before Applied ");
+                    cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Apply Promo' onclick='applyProductPromo(this)' id='"+productID+"' style='background-color:#FF0033;'>";
+                    $('[data-popup="popup-4"]').fadeIn(350);
+               }       
+            }else {
+                       SweetAlertWarning(" No Offer Found... ");
             }
-            var row = offertable.insertRow(offertable.rows.length);
-            row.style.backgroundColor = "#FFF7E7";
-            row.style.color = "#8C4510";
-            var cell0 = row.insertCell(0);
-            var cell1 = row.insertCell(1);
-            var cell2 = row.insertCell(2);
-            var cell3 = row.insertCell(3);
-            var cell4 = row.insertCell(4);
-            cell0.innerHTML = data.PromotionID
-            cell1.innerHTML = data.Discount
-            cell2.innerHTML = data.FriendlyName;
-            cell3.innerHTML = data.Scheme;
-            cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Apply Promo' onclick='applyProductPromo(this)' id='"+productID+"' style='background-color:#FF0033;'>";
-                $('[data-popup="popup-4"]').fadeIn(350);
-                    }else {
-                    SweetAlertWarning(" No Offer Found... ");
-            }
-    });
+       });
 }
 
 function getRow(index){
@@ -943,7 +966,6 @@ function checkProdOffer(productID , callback){
         }
     })
 }
-
 /******************* End of DB Operation ***********************/
 
 /******************* Alert and Full Screen ********************/
