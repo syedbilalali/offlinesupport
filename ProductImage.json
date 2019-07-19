@@ -1,0 +1,12 @@
+{
+    "SellsOrderItemID" : "32",
+    "productID" :"1234",
+    "Product Name" : "Puma Shoes",
+    "unitOfMeasurement":"Pairs",
+    "Qty":"",
+    "price":"",
+    "image":"",
+    "size":"",
+    "Discount":"",
+    "MaxValue":""
+}

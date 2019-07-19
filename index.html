@@ -1,0 +1,821 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.1, shrink-to-fit=yes" />
+    <meta name="description" />
+    <meta name="author" />
+    <title> Online Store  </title>
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+    <!--   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js"></script> -->
+    <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+    <script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <link href="js/bootstrap.min.css" rel="stylesheet" />
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/stylish-portfolio.min.css" rel="stylesheet" />
+    <link href="SweetAlert/sweetalert2.css" rel="stylesheet" />
+    <script src="SweetAlert/sweetalert2.min.js"></script>
+    <script src="js/jsonQ.js"></script>
+    <script src="FetchAPI.js"></script>
+    <script src="dbIndexOp.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/Custom.js"></script>
+    <script src="setup.js"></script>
+    <script src="cart.js"></script>
+    <style type="text/css">
+        /* Chrome, Safari and Opera syntax */
+        /* Standard syntax */
+        .completionList {
+            z-index: 1;
+            border: solid 1px #444444;
+            margin: 0px;
+            padding: 2px;
+            height: auto;
+            overflow: auto;
+            background-color: #FFFFFF;
+        }
+
+        .listItem {
+            color: #1c1c1c;
+            list-style: none;
+            text-align: left;
+        }
+
+        .itemHighlighted {
+            background-color: #ffc0c0;
+            list-style: none;
+            text-align: left;
+        }
+        .popup-overlay.active{
+            visibility:visible;
+        }
+
+        .popup-content.active {
+            visibility:visible;
+        }
+    </style>
+     <style type="text/css">
+        .modalPopup:target {
+            opacity: 1;
+        }
+        .modalBackground {
+            position: fixed;
+            background-color: #000;
+            filter: alpha(opacity=50);
+            opacity: 0.5;
+            z-index: 100 !important;
+        }
+        .modalPopup {
+            z-index: 1001 !important;
+        }
+        .btn_style1 {
+            height: 40px !important;
+            border-radius: 5px !important;
+            /* margin-top: 5px!important; */
+            font-size: 14px !important;
+            font-weight: bold !important;
+            padding: 5px !important;
+        }
+        .btn_style2 {
+            height: 80px !important;
+            border-radius: 5px !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+            padding: 5px !important;
+        }
+        /* Outer */
+.popup {
+	width:100%;
+	height:100%;
+	display:none;
+	position:fixed;
+	top:0px;
+	left:0px;
+	background:rgba(0,0,0,0.75);
+}
+
+/* Inner */
+.popup-inner {
+	max-width:327px;
+	padding:0px;
+	position:absolute;
+	top:50%;
+	left:50%;
+	-webkit-transform:translate(-50%, -50%);
+	transform:translate(-50%, -50%);
+	box-shadow:0px 2px 6px rgba(0,0,0,1);
+	border-radius:3px;
+	background:#fff;
+}
+
+/* Close Button */
+.popup-close {
+	width:30px;
+	height:30px;
+	padding-top:4px;
+	display:inline-block;
+	position:absolute;
+	top:0px;
+	right:0px;
+	transition:ease 0.25s all;
+	-webkit-transform:translate(50%, -50%);
+	transform:translate(50%, -50%);
+	border-radius:1000px;
+	background:rgba(0,0,0,0.8);
+	font-family:Arial, Sans-Serif;
+	font-size:20px;
+	text-align:center;
+	line-height:100%;
+	color:#fff;
+}
+
+.popup-close:hover {
+	-webkit-transform:translate(50%, -50%) rotate(180deg);
+	transform:translate(50%, -50%) rotate(180deg);
+	background:rgba(0,0,0,1);
+	text-decoration:none;
+}    
+.input-group .form-control {
+        z-index:unset !important;
+    }
+    </style>
+    <script type="text/javascript">
+    $(function() {
+	//----- OPEN
+	$('[data-popup-open]').on('click', function(e) {
+		var targeted_popup_class = jQuery(this).attr('data-popup-open');
+		$('[data-popup="' + targeted_popup_class + '"]').fadeIn(350);
+		e.preventDefault();
+	});
+	//----- CLOSE
+	$('[data-popup-close]').on('click', function(e) {
+		var targeted_popup_class = jQuery(this).attr('data-popup-close');
+		$('[data-popup="' + targeted_popup_class + '"]').fadeOut(350);
+		e.preventDefault();
+	});
+});
+      $(document).ready( function(){
+        $('').click(
+            function(){
+                alert(" Do you want to cancel. ");
+            }
+        );
+        $(".open").on("click", function(){
+            $(".popup, .popup-content").addClass("active");
+        });
+        $(".close, .popup").on("click", function(){
+            $(".popup, .popup-content").removeClass("active");
+        });
+    });
+    </script>
+</head>
+<body onload="" id="page-top" style="zoom:90%;">
+    <form method="post" action="javascript:void(0);" onsubmit="" id="form1">
+        <div id="UpdatePanel1">
+            <input type="hidden" name="hfvalue" id="hfvalue" />
+            <input type="hidden" name="HfTotal" id="HfTotal" />
+            <div id="offChng" class="container-fluid" style="background-color: red;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="img/MARVEL-POS.png" width="150px" class="logo">
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h2 style="color: White; padding-top: 15px; font-size: 22px;">
+                            MARVIL STORE
+                        </h2>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="padding-right: 30px; padding-bottom: 10px; text-align: right;">
+                            <img id="empPhoto" class="profile" src="" />
+                            <a class="menu-toggle" href="javascript:void(0)" onclick="checkForClick();" data-toggle="sidebar-wrapper" data-target="#sidebar-wrapper">
+                                <i class="fas fa-bars"></i>
+                            </a>&nbsp;
+                            <input type="submit" name="btnLogout" value="Logout" onclick="" id="btnLogout" class="btn-sm btn-dark" />
+                            <input type="submit" name="btnSync" data-popup-open="popup-6" value="Sync" onclick="" id="btnSync" class="btn-sm btn-info" />
+                        </div>
+                        <nav id="sidebar-wrapper">
+                            <ul class="sidebar-nav">
+                                <li class="sidebar-brand">
+                                    <a id="hpClientType" class="js-scroll-trigger">POS Client</a>
+                                </li>
+                                <li class="sidebar-nav-item">
+
+                                </li>
+                                <li class="sidebar-nav-item">
+
+                                </li>
+                                <li class="sidebar-nav-item">
+                                    <table class="table table-borderless" style="color: white; font-size: small; font-weight: lighter;">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <span id="lblStore">Store ID : 104</span>
+                                                </td>
+                                                <td>&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span id="lblEmp">Emp ID : 162</span>
+                                                </td>
+                                                <td>&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span id="Label7">Sales Targets </span>
+                                                    <span id="Labw\el21"></span>
+                                                    <br />
+                                                    <span id="Label9">Sales Targets </span>
+                                                    <span id="Label10"> </span>
+                                                </td>
+                                                <td>
+                                                    <span id="Label11">N/A</span>
+                                                    <br />
+                                                    <span id="Label12">N/A</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span id="Label13">Sales Achievement</span>
+                                                    <span id="Label14"> </span>
+                                                    <br />
+                                                    <span id="Label15">Sales Achievement</span>
+                                                    <span id="Label16"> </span>
+                                                </td>
+                                                <td>
+                                                    <span id="Label17" style="color: red;"> </span>
+                                                    <br />
+                                                    <br />
+                                                    <span id="Label18" style="color: red;"> </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td>&nbsp;</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </li>
+                                <li class="sidebar-nav-item">
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <section class="content-section bg-light" id="about">
+                <div class="container-fluid text-center">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <!--- Id DIv--->
+                            <div class="card">
+                                <div class="card-body">
+                                    <table class="table table-borderless" style="margin-bottom: 0px;">
+                                        <tbody>
+                                            <tr>
+                                                <td><b>TRANSACTION ID</b></td>
+                                                <td scope="row">
+                                                    <input name="txtTransactionIDShow" type="text" value=""  id="txtTransactionIDShow" class="form-control" placeholder="Transaction ID" />
+                                                </td>
+                                                <td><b>DATE</b></td>
+                                                <td>
+                                                    <input name="date" type="text" value="28-09-2019"  id="txtDate" class="form-control" placeholder="Current Date :" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>TYPE OF CUSTOMER</b></td>
+                                                <td>
+                                                    <select name="ddlCSV" onchange="" id="ddlCSV" class="form-control">
+                                                        <option selected="selected" value="WALK IN CUSTOMER ">WALK IN CUSTOMER </option>
+                                                        <option value="REGISTERED CUSTOMER">REGISTERED CUSTOMER</option>
+                                                    </select>
+                                                </td>
+                                                <td><b>CUSTOMER MOBILE NUMBER</b></td>
+                                                <td>
+                                                    <input name="txtCustomerID" type="text" maxlength="15" id="txtCustomerID" class="form-control" placeholder=" Enter Customer Mobile Number"  />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--- Id DIv--->
+                            <div class="card" style="margin-top: 20px;">
+                                <div class="card-body">
+                                    <div class="tbl_body" style="height: 183px !important; overflow: auto;">
+                                        <div>
+                                             <table id="CartTable" tabindex="1" cellspacing="0" cellpadding="4" align="Center" style="color:#333333;font-size:12px;width:99%;border-collapse:collapse;">
+                                                <thead></thead>
+                                                <tbody></tbody>
+                                             </table>
+                                        </div>
+                                    </div>
+                                    <div class="tbl_footer">
+                                        <table id="totalTable" class="tt table-borderless" style="width: 100%; float: none; padding: 5px; color: #000; background: #FFF;">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="padding: 5px 10px; border-top: 1px solid #DDD; font-size: 15px;">Items</td>
+                                                    <td class="text-right" style="padding: 5px 10px; font-size: 14px; font-weight: bold; border-top: 1px solid #DDD;">
+                                                        <span id="titems">
+                                                            <span id="lblItems"></span>
+                                                        </span>
+                                                    </td>
+                                                    <td style="padding: 5px 10px; border-top: 1px solid #DDD; font-size: 15px;">
+                                                        Total
+                                                    </td>
+                                                    <td class="text-right" style="padding: 5px 10px; font-size: 14px; font-weight: bold; border-top: 1px solid #DDD;">
+                                                        <!-- <span id="total">0.00</span> -->
+                                                        <span id="lblTotalAmount"></span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 5px 10px; border-top: 1px solid #DDD; font-size: 15px;">Payment Fee 2%</td>
+                                                    <td class="text-right" style="padding: 5px 10px; font-size: 14px; font-weight: bold; border-top: 1px solid #DDD;">
+                                                        <span id="titems">
+                                                            &nbsp;
+                                                            <span id="lblTaxFee"></span>
+                                                        </span>
+                                                    </td>
+                                                    <td style="padding: 5px 10px; border-top: 1px solid #DDD; font-size: 15px;">Cash</td>
+                                                    <td class="text-right" style="padding: 5px 10px; font-size: 14px; font-weight: bold; border-top: 1px solid #DDD;">
+                                                        <!-- <span id="total">0.00</span> -->
+                                                        <span id="titems">
+                                                            <span id="lblCashAmt"></span>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 5px 10px; font-size: 15px;">
+                                                        Voucher<a href="#" id="pptax2" tabindex="-1">
+                                                        </a>
+                                                    </td>
+                                                    <td class="text-right" style="padding: 5px 10px; font-size: 14px; font-weight: bold;">
+                                                        <span id="ttax2">
+                                                            <span id="lblVoucherAmmount"></span>
+                                                        </span>
+                                                    </td>
+                                                    <td style="padding: 5px 10px; font-size: 15px;">
+                                                        Discount<a href="#" id="ppdiscount" tabindex="-1">
+
+                                                        </a>
+                                                    </td>
+                                                    <td class="text-right" style="padding: 5px 10px; font-size: 14px; font-weight: bold;">
+                                                        <span id="titems">
+                                                            <span id="lblTotalDiscount"></span>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 5px 10px; font-size: 15px;">
+                                                        <span id="lblDbCrFee"></span>Credit Card<a href="#" id="pptax2" tabindex="-1">
+
+                                                        </a>
+                                                    </td>
+                                                    <td class="text-right" style="padding: 5px 10px; font-size: 14px; font-weight: bold;">
+                                                        <span id="ttax2">
+                                                            &nbsp;<span id="lblCreditCard"></span>
+                                                        </span>
+                                                    </td>
+                                                    <td style="padding: 5px 10px; font-size: 15px;">
+                                                        Debit Card<a href="#" id="ppdiscount" tabindex="-1">
+
+                                                        </a>
+                                                    </td>
+                                                    <td class="text-right" style="padding: 5px 10px; font-size: 14px; font-weight: bold;">
+                                                        <span id="tds">
+                                                            <span id="lblDebitCard"></span>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr style="font-weight: bold; font-size: 12px; height: 33px;">
+                                                    <td style="padding: 5px 10px; border-top: 1px solid #666; border-bottom: 1px solid #333; font-weight: bold; background: #333; color: #FFF;">
+                                                        VAT/TAX  (<span id="lblCurrentTaxVal"></span>
+                                                        ):
+                                                    </td>
+                                                    <td class="text-right" style="padding: 5px 10px 5px 10px; font-size: 14px; border-top: 1px solid #666; border-bottom: 1px solid #333; font-weight: bold; background: #333; color: #FFF;">
+                                                        <span id="lblTotalTax"></span>
+                                                    </td>
+                                                    <td style="padding: 5px 10px; border-top: 1px solid #666; border-bottom: 1px solid #333; font-weight: bold; background: #333; color: #FFF;">
+                                                        Total Paid :<a href="#" id="pshipping" tabindex="-1">
+
+                                                        </a>
+                                                        <span id="tship"></span>
+                                                        <input type="image" name="imgOnBillTotal" id="imgOnBillTotal" src="../img/img/discount.png" data-popup-open="popup-3" style="height:19px;width:20px;" />
+                                                    </td>
+                                                    <td class="text-right" style="padding: 5px 10px 5px 10px; font-size: 14px; border-top: 1px solid #666; border-bottom: 1px solid #333; font-weight: bold; background: #333; color: #FFF;">
+                                                        <span id="gtotal">
+                                                            <span id="lblTotalPayment"></span>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="row" style="padding-top: 30px; margin-top: 25px;">
+                                        <div class="col-md-4 t1">
+                                            <input type="button" name="btnCancel" value="Cancel [Esc]" onclick="showMsg()" id="Button2" class="btn btn-danger btn_style1" />
+                                            <input type="button" name="btnHold" value="Hold [F8]"  id="btnHold"  onclick="doHold()" class="btn  btn-info btn_style1"  />
+                                        </div>
+                                        <div class="col-md-4 tt">
+                                            <input type="button" name="btn_Retrieve" data-popup-open="popup-5" value="Retrive Hold" onclick="" id="btn_Retrieve" class="btn btn-info btn_style1" />
+                                            <input type="button" name="btnPrint" data-popup-open="popup-2"  value="Print [E9]" onclick="RetriveData()" id="btnPrint" class="btn btn-danger btn_style1"  />
+                                        </div>
+                                        <div class="col-md-4 t2">
+                                            <input type="submit" name="btnPay" value="Pay [F7]" onclick="OnPay()" id="btnPay" class="btn btn-primary nt btn_style2"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-12 col-lg-12">
+                                    <div class="card-body row no-gutters align-items-center">
+                                        <!--end of col-->
+                                        <div class="col">
+                                            <input name="txtSearch" type="text" maxlength="40" onchange="txtChange()" onkeypress="" id="txtSearch" title="Search Product Here.." class="form-control  form-control-lg" placeholder="Enter Product Name &amp; Product ID" required/>
+                                            <span id="lb_Fake" style="display: none"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end of col-->
+                            </div>
+                            <div class="card" style="margin-top: 20px; margin-bottom: 0px;">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <img id="prodImage" class="card-img"  style="height: 90px; width: 100%;" />
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="row" style="margin-top: 3px;">
+                                                <b>Name :&nbsp;</b><span id="lblProductName"></span>
+                                            </div>
+                                            <div class="row" style="margin-top: 3px;">
+                                                <b>Price :&nbsp;</b>
+                                                <span id="lblPrice"></span>
+                                            </div>
+                                            <div class="row" style="margin-top: 3px;">
+                                                <b>Stock :&nbsp;</b>
+                                                <span id="lblStock"></span>
+                                            </div>
+                                            <div class="row" style="margin-top: 3px;">
+                                                <b>Discount :&nbsp;</b>
+                                                <span id="lblDiscount"></span>
+                                            </div>
+                                            <div class="row" style="margin-top: 3px;">
+                                                <b>Unit of Measurment :&nbsp;</b>
+                                                <span id="lblUOM"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card" style="margin-top: 20px; margin-bottom: 0px;">
+                                <div class="card-body p-3">
+                                    <table class="table text-left" style="margin-bottom: 0px; border: none !important;">
+                                        <tbody>
+                                            <tr class="p-0">
+                                                <td width="40%" class="p-0">
+                                                    <b>Total -: </b>
+                                                </td>
+                                                <td width="60%" class="p-0">
+                                                    <input name="txtTotal" type="text" value="" readonly="readonly" id="txtTotal" class="form-control" />
+                                                </td>
+                                            </tr>
+                                            <tr class="p-0">
+                                                <td class="p-0"><b>Discount</b></td>
+                                                <td class="p-0">
+                                                    <div class="input-group">
+                                                        <input name="txtDiscount" type="text" value="" readonly="readonly" id="txtDiscount" class="form-control" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="p-0">
+                                                <td class="p-0"><b>Total Amount</b></td>
+                                                <td class="p-0">
+                                                    <input name="txtTotalPay" type="text" value="" readonly="readonly" id="txtTotalPay" class="form-control" />
+                                                </td>
+                                            </tr>
+                                            <tr class="p-0">
+                                                <td class="p-0"><b>Refund</b></td>
+                                                <td class="p-0">
+                                                    <div class="input-group">
+                                                        <input name="txtRefund" type="text" value="" readonly="readonly" id="txtRefund" class="form-control" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card" style="margin-top: 20px;">
+                                <div class="card-body p-3">
+                                    <table class="table text-left" style="margin-bottom: 0px;">
+                                        <tbody>
+                                            <tr class="p-0">
+                                                <td width="40%" class="p-0">
+                                                    <b>
+                                                        <input id="Chk_Cash" data-popup-open="popup-1" type="checkbox" name="Chk_Cash" onclick="" />&nbsp;Cash
+                                                    </b>
+                                                </td>
+                                                <td width="60%" class="p-0">
+                                                    <input name="txtCashAmount" type="text" readonly="readonly" onchange="" onkeypress="" id="txtCashAmount" class="form-control" />
+                                                </td>
+                                            </tr>
+                                            <tr class="p-0">
+                                                <td class="p-0">
+                                                    <b>
+                                                        <input id="Chk_Debit" type="checkbox" disabled="disabled" name="Chk_Debit" onclick="" />&nbsp;Debit Card
+                                                    </b>
+                                                </td>
+                                                <td class="p-0">
+                                                    <div class="input-group">
+                                                        <input name="TextBox24" type="text" disabled="disabled" onchange="" onkeypress="" id="TextBox24" class="form-control" placeholder="Amount" />
+                                                        <select name="ddlBankNameDebit" id="ddlBankNameDebit" disabled="disabled" class="aspNetDisabled" class="form-control" disabled="disabled" style="background-color:#EEEEEE;">
+                                                            <option selected="selected" value="--SELECT BANK--">--SELECT BANK--</option>
+                                                            <option value="Bank A">Bank A</option>
+                                                            <option value="Bank B">Bank B</option>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="p-0">
+                                                <td class="p-0"><b>Debit Card No</b></td>
+                                                <td class="p-0">
+                                                    <input name="TextBox30" disabled="disabled" type="text" maxlength="16" readonly="readonly" id="TextBox30" class="form-control" placeholder="Card No." />
+                                                </td>
+                                            </tr>
+                                            <tr class="p-0">
+                                                <td class="p-0">
+                                                    <b>
+                                                        <input id="Chk_Credit" disabled="disabled" type="checkbox" name="Chk_Credit" onclick="" />&nbsp;Credit Card
+                                                    </b>
+                                                </td>
+                                                <td class="p-0">
+                                                    <div class="input-group">
+                                                        <input name="TextBox26" type="text" disabled="disabled" id="TextBox26" class="form-control" />
+                                                        <select name="ddlBankNameCredit" id="ddlBankNameCredit" disabled="disabled" class="aspNetDisabled" class="form-control" disabled="disabled" style="background-color:#EEEEEE;">
+                                                            <option selected="selected" value="--SELECT BANK--">--SELECT BANK--</option>
+                                                            <option value="Bank A">Bank A</option>
+                                                            <option value="Bank B">Bank B</option>
+                                                        </select>
+                                
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="p-0">
+                                                <td class="p-0"><b>Credit Card No</b></td>
+                                                <td class="p-0">
+                                                    <input name="TextBox6" disabled="disabled" type="text" maxlength="16" readonly="readonly" id="TextBox6" class="form-control" placeholder="Card No." />
+                                                </td>
+                                            </tr>
+                                            <tr class="p-0">
+                                                <td class="p-0">
+                                                    <b>
+                                                        <input id="CheckBox4" disabled="disabled" type="checkbox" name="CheckBox4" onclick="" />&nbsp;Voucher No
+                                                    </b>
+                                                </td>
+                                                <td class="p-0">
+                                                    <div class="input-group">
+                                                        <input name="TextBox28" type="text" disabled="disabled" readonly="readonly" onchange="" onkeypress="" id="TextBox28" class="form-control" placeholder="Voucher No." />
+                                                        <input name="TextBox29" type="text" disabled="disabled" readonly="readonly" id="TextBox29" class="form-control" placeholder="Voucher Value" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-12 col-lg-12" style="padding-top: 10px !important;">
+                                    <div class="card-body row no-gutters align-items-center">
+                                        <!--end of col-->
+                                        <div class="col">
+                                            <div class="form-group-sm">
+                                                <input name="txtTransactionID" readonly='readonly' type="text" onchange="" onkeypress="" id="txtTransactionID" class="form-control" placeholder="Enter Transaction ID. " />
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <input type="submit"  name="btnReturn" value="Return" onclick="" id="btnReturn" class="btn btn-sm btn-primary" disabled='disabled'/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end of col-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="popup" data-popup="popup-1">
+                <div class="popup-inner">
+                        <table class="table table-responsive" style="background: white">
+                                <tr>
+                                    <td>
+                                        <input type="submit" name="btn_1" value="410" onclick="" id="btn_1" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:127px;" />
+                                        <b>X</b>
+                                        <span id="lblCount410">0</span>
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="btn_2" value="420" onclick="" id="btn_2" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:40px;width:128px;margin-left: 0px" />
+                                        <b>X</b>
+                                        <span id="lblCount420">0</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="auto-style31">
+                                        <input type="submit" name="btn_3" value="450" onclick="plusValue(this);" id="btn_3" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:125px;" />
+                                        <b>X</b>
+                                        <span id="lblCount450">0</span>
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="btn_4" value="500" onclick="" id="btn_4" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:41px;width:130px;" />
+                                        <b>X</b>
+                                        <span id="lblCount500">0</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="submit" name="btn_Manual" value="Manual" onclick="chngCashManually()" id="btn_Manual" style="color:White;background-color:#CC3300;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:100%;" />
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="btn_Cancel" value="OK" onclick="chngCashSet()" id="btn_Cancel" style="color:White;background-color:DarkGreen;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:100%;" />
+                                    </td>
+                                </tr>
+                            </table>                
+                     <a class="popup-close" data-popup-close="popup-1" href="#">x</a>
+                </div>
+            </div>
+        </div>
+            <div class="popup" data-popup="popup-5">
+                    <div class="popup-inner">
+                        <div >
+                <table class="table table-bordered gvDatatable" cellspacing="0" cellpadding="3" rules="all" id="GridView3" style="background-color:White;border-color:#CCCCCC;border-width:1px;border-style:None;border-collapse:collapse;">
+                    <tbody><tr style="color:White;background-color:#006699;font-weight:bold;">
+                        <th scope="col">Order ID</th><th scope="col">Total</th><th scope="col">Action</th>
+                    </tr>
+                    <tr style="color:#000066;">
+                        <td>
+                                                    <span id="GridView3_lb_SellsOrderId_0">277</span>
+                                                </td><td>
+                                                    <span id="GridView3_lb_CustomerID_0">900.50</span>
+                                                </td><td>
+                                                    <input type="submit" name="GridView3$ctl02$btn_Action" value="Retrieve" onclick="" id="GridView3_btn_Action_0">
+                                                    <input type="submit" name="GridView3$ctl02$btnAction1" value="Delete" onclick="" id="GridView3_btnAction1_0">
+                                                </td>
+                    </tr>
+                </tbody></table>
+            </div>
+                <a class="popup-close" data-popup-close="popup-5" href="#">x</a>
+                    </div>
+            </div>
+            <!-- Products Offers  Tables -->
+            <div class="popup" data-popup="popup-3">
+                <div class="popup-inner">
+                        <table cellspacing="2" cellpadding="3" rules="all" id="gvPromotionData" style="background-color:#DEBA84;border-color:#DEBA84;border-width:1px;border-style:None;height:243px;">
+                            <tbody>
+                                <tr style="color:White;background-color:#A55129;font-weight:bold;height:30px;">
+                                    <th scope="col">ProductID</th><th scope="col">Discount</th>
+                                    <th scope="col">Promo Name</th>
+                                    <th scope="col">Scheme Name</th>
+                                    <th scope="col">GetType</th>
+                                    <th scope="col">OnQty</th>
+                                    <th scope="col">Apply Promo</th>
+                                    </tr><tr>
+                                    <td colspan="7">
+                                        <label style="text-align: center; color: red;">No Discount Offer Found !!! </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    <a class="popup-close" data-popup-close="popup-3" href="#">x</a>
+                </div>
+            </div>
+            <!-- Bill Product Offers  -->
+            <div class="popup" data-popup="popup-4">
+                <div class="popup-inner">
+                    <table cellspacing="2" cellpadding="3" rules="all" id="gvBillTotal" style="background-color:#DEBA84;border-color:#DEBA84;border-width:1px;border-style:None;height:243px;">
+                        <thead>
+                                <tr style="color:White;background-color:#A55129;font-weight:bold;height:30px;">
+                                    <th scope="col">Promo ID</th><th scope="col">Discount</th><th scope="col">Promo Name</th><th scope="col">Scheme Name</th><th scope="col">Apply Promo</th>
+                                 </tr>
+                        </thead>
+                        <tbody>
+                          
+                        </tbody>
+                     </table>
+                    <a class="popup-close" data-popup-close="popup-4" href="#">x</a>
+                </div>
+            </div>
+            <!--Sync Process -->
+            <div class="popup" data-popup="popup-6">
+                <div class="popup-inner">
+                    Processing... 
+                    <a class="popup-close" data-popup-close="popup-6" href="#">x</a>x
+                </div>
+            
+            </div>
+            <!--Bill Print-->
+            <div class="popup" data-popup="popup-2">
+            <div class="popup-inner">
+            <div id="panelprint" style="display:show;">
+                <div id="PrintDiv" class="row" style="margin: 10px;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="invoice-title">
+                                    <div class="text-center">
+                                        <b>AFLAK Electronics Industries Co. Ltd</b><br />
+                                        <b>Tax ID:</b>
+                                        <span id="lblNPWP"></span><br />
+                                        <b>MARVIL STORE </b>
+                                        <br />
+                                        <b>WWW.marvil.co.in</b><br />
+                                        <b>Tlp:</b><span id="lblTlp"></span><br />
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-xs-6 text-left">
+                                        <article>
+                                            <strong>Invoice No. :</strong><span id="lblNoTransaksi"></span><br>
+                                            <b>DATE:</b>
+                                            <span id="lblDate"></span><br>
+                                            <b>Cashier:</b><span id="lblKasir"></span>
+                                            <br>
+                                        </article>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-6 text-left">
+                                <b>Total Price:</b><span id="lblTotalHarga"></span><br />
+                                <b>Total Disc:</b><span id="lblTotalDisc"></span><br />
+                                <b>Total Payment:</b><span id="lblTotalPayment"></span>
+                            </div>
+                            <div class="col-md-6 text-right">
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-6 text-left">
+                                <b>The price above includes 10% VAT:</b><span id="lblTotalTax"></span><br />
+                                <b>Cash/Card: </b>
+                                <span id="lblCash_Kartux"></span><br />
+                                <b>Card Number: </b>
+                                <span id="lblCardNameNo"></span><br />
+                                <b>Card Payment Additional Fees:</b>
+                                <span id="lblBiayaTambahanKartu"></span><br />
+                                <b>Change: </b>
+                                <span id="lblKembalian"></span><br />
+                            </div>
+                            <div class="col-md-6 text-right">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <b>Types of goods:</b>&nbsp;<span id="lblJenisBarang"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <b>The amount of goods:</b>&nbsp;<span id="lblJumlahBarang"></span>
+                            </div>
+                        </div>
+                        <br />
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <b>
+                                    THANK YOU FOR YOUR VISIT
+                                    <br />
+                                    The purchased item can not be restored,
+                                    <br />
+                                    unless there is an agreement.
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+            <a class="popup-close" data-popup-close="popup-2" href="#">x</a>
+        </div>
+         </div>
+        </div>
+    </form>
+</body>
+</html>

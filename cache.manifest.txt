@@ -1,0 +1,36 @@
+﻿CACHE MANIFEST
+# version 1.1
+    
+CACHE:
+/New_Terminal/index.html
+/New_Terminal/vendor/bootstrap/css/bootstrap.min.css
+/New_Terminal/vendor/fontawesome-free/css/all.min.css
+/New_Terminal/vendor/simple-line-icons/css/simple-line-icons.css
+/New_Terminal/css/stylish-portfolio.min.css
+/New_Terminal/js/jquery-ui.css
+/New_Terminal/js/bootstrap.min.css
+/New_Terminal/js/jquery.min.js
+/New_Terminal/js/jquery-ui.js
+/New_Terminal/js/bootstrap.min.js
+/New_Terminal/js/Custom.js
+/New_Terminal/js/jquery.dataTables.min.js
+/New_Terminal/js/service_worker.js
+/New_Terminal/vendor/bootstrap/css/bootstrap.min.css
+/New_Terminal/vendor/fontawesome-free/css/all.min.css
+/New_Terminal/vendor/simple-line-icons/css/simple-line-icons.css
+/New_Terminal/css/stylish-portfolio.min.css
+/New_Terminal/SweetAlert/sweetalert2.min.js
+/New_Terminal/SweetAlert/sweetalert2.css
+/New_Terminal/vendor/jquery/jquery.min.js
+/New_Terminal/vendor/bootstrap/js/bootstrap.bundle.min.js
+/New_Terminal/vendor/jquery-easing/jquery.easing.min.js
+/New_Terminal/js/stylish-portfolio.min.js
+/New_Terminal/themes/offline-theme-chrome.css
+/New_Terminal/themes/offline-language-english.css
+/New_Terminal/js/offline.js
+    
+FALLBACK:
+/New_Terminal/index11.html
+    
+NETWORK:
+*

@@ -1,0 +1,15 @@
+﻿CACHE MANIFEST
+# version 1
+    
+CACHE:
+/Sample1.aspx
+/vendor/bootstrap/css/bootstrap.min.css
+/vendor/fontawesome-free/css/all.min.css
+/vendor/simple-line-icons/css/simple-line-icons.css
+/css/stylish-portfolio.min.css
+    
+FALLBACK:
+/Sample1.aspx
+    
+NETWORK:
+*
