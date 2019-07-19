@@ -436,7 +436,9 @@ function applyProductPromo(data){
     });
     }else{
         alert(" Cancel the Promotion ... ");
-        
+        window.AppliedProdPromo = 0;
+        window.AppliedProdPromoID = 0; 
+
     }
 }
 function cancelAppliedProductPromo(){
@@ -868,7 +870,6 @@ function ProdOfferImages(){
    });
 }
 function ProductPromoData(){
-
     var productPromo = [];
     FetchOnProductPromo("104" , function(data){ 
         var data1 = JSON.parse(data);
