@@ -66,7 +66,6 @@ function FetchOnBillTotalPromo(StoreID , callback){
 }
 function FetchOnProductPromo(StoreID , callback){
     $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/getProductPromotion", {storeID:StoreID} , function(data, status){
-   //     console.log(data);
        callback(data);
    }).done(function(){ 
        console.info(" Successfully Get the Data ");

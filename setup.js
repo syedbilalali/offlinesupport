@@ -1,7 +1,7 @@
 /************Page Initial Operation ************/
 function init(){
-    console.log(" Intialisation... ");
 
+    console.log(" Intialisation... ");
     //Search Box
     window.txtSearch =  document.getElementById('txtSearch');
     window.txtTransactionID  = document.getElementById('txtTransactionIDShow');
@@ -64,16 +64,12 @@ function init(){
     };
     setInitialRow();
     getCurrentTax();
-
     //Pay Panel 
     window.txtCashAmmount = document.getElementById('txtCashAmmount');
     $("#btnSync").click( function(){
         //Load Value Into Db From  API
         //Load Product Details 
             getProductImage1();
-        //Load Product Offers Details 
-            ProdOfferImages();
-            FetchBillOffersFromOnline()
     });
     $("#txtSearch").autocomplete({ 
         source: function (request, response) {
@@ -97,19 +93,16 @@ function init(){
 
 /*************** Table Operations   **************************/
 function onlineActivity(){
+    console.log(" Now Net is Online");
     getCurrentTaxValue(function(value){
         console.log(" Value Is the " + value);
         window.CurrentTax = value;
     });
     window.Products.length = 0;
     getProductImage1();
-    /** readAll(
-        "ProductImage", function(value){
-            window.Products.push({ productID : value.productID , ProductName : value.ProductName }); 
-        }       
-    ); */
 }
 function offlineActivity(){ 
+    console.log(" Now Net is Offline");
     loadProductFromDB();
 }
 function getData( ProductID ){
@@ -208,7 +201,6 @@ function setHeader1(Products){
    for (var i = 0; i < Products.length; i++) {
        console.log(" Value on i - " + i + " is " + Products[i]);
        for (var key in Products[i]) {
-           console.log(" Key is " + key);
            if (col.indexOf(key) === -1) {
                col.push(key);
            }
@@ -296,28 +288,27 @@ function setDummyRow(ItemList , discOffer){
         var cur_row  =  table1.rows.length - 1;
         cell11.innerHTML =  "<input type='image' name='imagebutton' src='img/img/Remove.png' style='height:20px;width:20px;' onclick='removeRow("+ cur_row  +")'>";
     }
-   
 }
 var prodOffers = [];
 function applyProductPromo(data){
-    
-    if(data.value == "Apply Promo"){
-    var productID1 = data.id;
-    var offer_row = data; 
-    var row = data.parentNode.parentNode;
-    var promotionID = row.cells[0].innerHTML;
-    var productID  = row.cells[1].innerHTML;
-    var peruserApplied = 0;
-    var Buy =0, Get= 0 , Additional_Value =0;
-    var select_rows = data.parentNode.parentNode;
-    var values = select_rows.cells[0].innerHTML;
-    var table1 = document.getElementById("CartTable");
-    var row1 = table1.rows;
-    var discountPromoPrice = 0;
-    var temp_promotion_ID = 0 ; 
-    alert("Product ID "+ productID1 +"Promotion ID " + row.cells[0].innerHTML +"\n Offer is " + row.cells[3].innerHTML);
-    read("ProdOffers", productID1 , function(data){
 
+    if(data.value == "Apply Promo"){
+
+        var productID1 = data.id;
+        var offer_row = data; 
+        var row = data.parentNode.parentNode;
+        var promotionID = row.cells[0].innerHTML;
+        var productID  = row.cells[1].innerHTML;
+        var peruserApplied = 0;
+        var Buy =0, Get= 0 , Additional_Value =0;
+        var select_rows = data.parentNode.parentNode;
+        var values = select_rows.cells[0].innerHTML;
+        var table1 = document.getElementById("CartTable");
+        var row1 = table1.rows;
+        var discountPromoPrice = 0;
+        var temp_promotion_ID = 0 ; 
+        alert("Product ID "+ productID1 +"Promotion ID " + row.cells[0].innerHTML +"\n Offer is " + row.cells[3].innerHTML);
+        read("ProdOffers", productID1 , function(data){
         console.log(" Apply Promotion Offers Values -: " + JSON.stringify(data));
         prodOffers.push(JSON.stringify(data));
         console.log("Promotion ID "  + data.promotionID);
@@ -338,8 +329,6 @@ function applyProductPromo(data){
            console.log("Row Cell Value " + row1[i].cells[1].innerHTML + " Product ID " + productID1);
            if(row1[i].cells[1].innerHTML == productID1){
                 current_row = row1[i];
-            //    var input = current_row.getElementByTag('input');
-             //   console.log(" Row Value is " + input.value);
            }
         }
         if(parseFloat(data.PerUserApplied) > 0){
@@ -438,12 +427,7 @@ function applyProductPromo(data){
         alert(" Cancel the Promotion ... ");
         window.AppliedProdPromo = 0;
         window.AppliedProdPromoID = 0; 
-
     }
-}
-function cancelAppliedProductPromo(){
-    SweetAlertInfo(" Cancelling Promo.... ");
-
 }
 var selectedRow ;
 function validate(val){
@@ -511,11 +495,13 @@ function updateRow(){
    }
 }
 function offerClick(val){
+
     var row = val.parentNode.parentNode;
     var productID  = row.cells[1].innerHTML;
     console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromo);
     console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromoID);
         read("ProdOffers" ,  productID , function(data){
+
             if(data != "No"){
                var offertable = document.getElementById("gvBillTotal");
                    for(var i=1; i<offertable.rows.length; i++){
@@ -572,15 +558,8 @@ $(document).ready(function(){
      var div = document.getElementById("offChng");
      if(check === "online"){
         div.style.backgroundColor = "red";
-        console.log(" Net is online ");
         alert(" Current Net Status is " + check);
         getProductImage1();
-        alert(" Product is Added");
-        ProductPromoData();
-        alert(" Product Offer is Added ");
-       FetchBillOffersFromOnline()
-       alert(" Bill Product Offer is Added ");
-     //   ProdutPromo();
      }else {
 
         div.style.backgroundColor = "yellow";
@@ -829,6 +808,7 @@ function SaveProductImage(StoreID ){
 }
 //Get Product Details FROm DB TO ARRAY
 function loadProductFromDB(){
+    console.log(" Load Product From DB to Array");
     window.Products.length = 0;
     readAll(
         "ProductImage", function(value){
@@ -837,7 +817,7 @@ function loadProductFromDB(){
     );
 }
 //Get Bill Offers Details FROM API TO DB
-function ProdOfferImages(){
+function BillProm(){
     var ProdofferImage =[];
     FetchOnBillTotalPromo("104" , function(data){
            var data1 = JSON.parse(data);
@@ -865,13 +845,14 @@ function ProdOfferImages(){
                    Discount2:data1[i].Discount2,
                    IsProductFree:data1[i].IsProductFree, 
                };
-               add(window.db ,"ProdOffers", ProdofferImage[i]);
+               add(window.db ,"BillOffers", ProdofferImage[i]);
            }
    });
 }
 function ProductPromoData(){
     var productPromo = [];
-    FetchOnProductPromo("104" , function(data){ 
+    FetchOnProductPromo("104" , function(data){
+        console.log(" Get Data From Product Promotion " + JSON.stringify(data)); 
         var data1 = JSON.parse(data);
         for(var i=0; i<data1.length; i++){
             productPromo[i] = {
@@ -896,7 +877,6 @@ function ProductPromoData(){
             };
             add(window.db , "ProdOffers" , productPromo[i]);
         }
-
     });
 }
 function InsertSellsOrderItem(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy ,  UpdatedBy , UpdatedOn , StoreID){
@@ -947,6 +927,7 @@ function getProductImage1(){
         var obj = getProductImage(104 , function(data){ 
         var data =  JSON.parse(data);
         for(var i=0 ; i<data.length; i++){
+            
             productImage[i] = { SellsOrderItemID : data[i].SellsOrderItemID , productID : data[i].productID , ProductName : data[i].ProductName ,unitOfMeasurement : data[i].unitOfMeasurement,
                 Qty : data[i].Qty , Price : data[i].Price  , image : data[i].image , size : data[i].size , Discount : data[i].Discount  , MaxValue : data[i].MaxValue , Quantity : data[i].Quantity , 
                 IsReturn: data[i].IsReturn, IsDraft: data[i].IsDraft, IsQtyTxtOn: data[i].IsQtyTxtOn , IsDiscImgOn  : data[i].IsDiscImgOn  
