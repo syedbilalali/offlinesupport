@@ -1,10 +1,9 @@
-
-function initialiseCart(table){
+function initialiseCart(table) {
    var table1 = document.getElementById(table);
    var row = table1.insertRow(-1);
    row.style.backgroundColor = "#5D7B9D";
    row.style.color = "White";
-   row.style.fontWeight  = "Bold";
+   row.style.fontWeight = "Bold";
    var cell1 = row.insertCell(0);
    var cell2 = row.insertCell(1);
    var cell3 = row.insertCell(2);
@@ -17,6 +16,7 @@ function initialiseCart(table){
    var cell10 = row.insertCell(9);
    var cell11 = row.insertCell(10);
 }
-function settheTableHeader(){
-   
+
+function settheTableHeader() {
+
 }

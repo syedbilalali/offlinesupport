@@ -21,6 +21,7 @@ request.onsuccess = function(event) {
    console.log("Data Created Success: "+ db);
 };
 request.onupgradeneeded = function(event) {
+   
    var db = event.target.result;
    var objectStore = db.createObjectStore('ProductImage', { keyPath: 'productID'});
    objectStore.createIndex("ProductName", "ProductName", { unique: false });
@@ -30,7 +31,8 @@ request.onupgradeneeded = function(event) {
    OfferStore.createIndex("FriendlyName", "FriendlyName" ,{ unique : false }); 
    var SellOrder = db.createObjectStore("SellsOrder", { keyPath : 'SellsOrderId'});
    //SellOrder.createIndex("");
-   var SellsOrderItems = db.createObjectStore("SellsOrderItems" , { keyPath : 'SellsOrderId'});
+   var SellsOrderItems = db.createObjectStore("SellsOrderItems" ,{ keyPath: "id", autoIncrement:true });
+   SellsOrderItems.createIndex("SellsOrderId", "SellsOrderId", { unique: false });
    var SellTransactioin =db.createObjectStore("SellTransaction" , { keyPath : 'SellsOrderId'});
    var Promotion_Log =  db.createObjectStore("Promotion_Log" , { keyPath : 'Id'});
 }
