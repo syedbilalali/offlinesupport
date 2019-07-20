@@ -84,7 +84,6 @@ function init(){
         },
         minLength: 1
     });
-
     window.txtTransactionID.text = uniqueNumber();
     console.log(" Transaction ID " + window.txtTransactionID);
 }
@@ -146,7 +145,6 @@ function removeEmptyRow(){
     }
 }
 function setEmptyRow(){
-
     var table1 = document.getElementById("CartTable");
     var row = table1.insertRow(1);
     row.style.backgroundColor = "White";
@@ -291,23 +289,22 @@ function setDummyRow(ItemList , discOffer){
 }
 var prodOffers = [];
 function applyProductPromo(data){
-
+    
+    var productID1 = data.id;
+    var offer_row = data; 
+    var row = data.parentNode.parentNode;
+    var promotionID = row.cells[0].innerHTML;
+    var productID  = row.cells[1].innerHTML;
+    var peruserApplied = 0;
+    var Buy =0, Get= 0 , Additional_Value =0;
+    var select_rows = data.parentNode.parentNode;
+    var values = select_rows.cells[0].innerHTML;
+    var table1 = document.getElementById("CartTable");
+    var row1 = table1.rows;
+    var discountPromoPrice = 0;
+    var temp_promotion_ID = 0 ; 
+    alert("Product ID "+ productID1 +"Promotion ID " + row.cells[0].innerHTML +"\n Offer is " + row.cells[3].innerHTML);
     if(data.value == "Apply Promo"){
-
-        var productID1 = data.id;
-        var offer_row = data; 
-        var row = data.parentNode.parentNode;
-        var promotionID = row.cells[0].innerHTML;
-        var productID  = row.cells[1].innerHTML;
-        var peruserApplied = 0;
-        var Buy =0, Get= 0 , Additional_Value =0;
-        var select_rows = data.parentNode.parentNode;
-        var values = select_rows.cells[0].innerHTML;
-        var table1 = document.getElementById("CartTable");
-        var row1 = table1.rows;
-        var discountPromoPrice = 0;
-        var temp_promotion_ID = 0 ; 
-        alert("Product ID "+ productID1 +"Promotion ID " + row.cells[0].innerHTML +"\n Offer is " + row.cells[3].innerHTML);
         read("ProdOffers", productID1 , function(data){
         console.log(" Apply Promotion Offers Values -: " + JSON.stringify(data));
         prodOffers.push(JSON.stringify(data));
@@ -351,6 +348,16 @@ function applyProductPromo(data){
                         var replace = str.replace(rep1, res1);
                         console.log(" Current input Html -: " + replace);
                         current_row.cells[4].innerHTML = replace;
+                        fillPayment();
+                        var row =  offer_row.parentNode.parentNode;
+                        var btn = row.cells[4].getElementsByTagName('input')[0];
+                        btn.style.backgroundColor = "YELLOW";
+                        btn.value = "Cancel Promo";
+                        console.log(" Value is the " + btn);
+                        row.cells[4].appendChild(btn);
+                        console.log(" Successfully Offer Applied !!! Applied " + window.AppliedProdPromo + " Promotion " + window.AppliedProdPromoID + " Data Promoiton " + data.PromotionID + " Temp Promotion Id " + temp_promotion_ID);
+                        window.AppliedProdPromo = 1;
+                        window.AppliedProdPromoID = data.PromotionID;
                     }else{
                         alert(" Buy Quantity Is Less Then Offers ");
                     }
@@ -377,6 +384,15 @@ function applyProductPromo(data){
                         current_row.cells[6].appendChild(spandata);
                         current_row.cells[9].innerHTML = actual_price.toFixed(2);
                         fillPayment();
+                        var row =  offer_row.parentNode.parentNode;
+                        var btn = row.cells[4].getElementsByTagName('input')[0];
+                        btn.style.backgroundColor = "YELLOW";
+                        btn.value = "Cancel Promo";
+                        console.log(" Value is the " + btn);
+                        row.cells[4].appendChild(btn);
+                        console.log(" Successfully Offer Applied !!! Applied " + window.AppliedProdPromo + " Promotion " + window.AppliedProdPromoID + " Data Promoiton " + data.PromotionID + " Temp Promotion Id " + temp_promotion_ID);
+                        window.AppliedProdPromo = 1;
+                        window.AppliedProdPromoID = data.PromotionID;
                     }
                 }
             }
@@ -400,14 +416,21 @@ function applyProductPromo(data){
                         var current_total_Price = current_row.cells[9].innerHTML
                         current_row.cells[9].innerHTML = parseFloat(current_total_Price) + data.AddtionalValue;
                         fillPayment();
+                        var row =  offer_row.parentNode.parentNode;
+                        var btn = row.cells[4].getElementsByTagName('input')[0];
+                        btn.style.backgroundColor = "YELLOW";
+                        btn.value = "Cancel Promo";
+                        console.log(" Value is the " + btn);
+                        row.cells[4].appendChild(btn);
+                        console.log(" Successfully Offer Applied !!! Applied " + window.AppliedProdPromo + " Promotion " + window.AppliedProdPromoID + " Data Promoiton " + data.PromotionID + " Temp Promotion Id " + temp_promotion_ID);
+                        window.AppliedProdPromo = 1;
+                        window.AppliedProdPromoID = data.PromotionID;
                     } 
             }
             if(data.ProdPromoType === " Special Price "){
                 alert(" Special Price Promotion is Adding ");
                 current_row.cells[9].innerHTML = data.AddingPrice;
                 fillPayment();
-              //  offer_row.style.backgroundColor = "YELLOW";
-            //    offer_row.value = "Cancel Promotion";
                 var row =  offer_row.parentNode.parentNode;
                 var btn = row.cells[4].getElementsByTagName('input')[0];
                 btn.style.backgroundColor = "YELLOW";
@@ -418,15 +441,148 @@ function applyProductPromo(data){
                 window.AppliedProdPromo = 1;
                 window.AppliedProdPromoID = data.PromotionID;
             }
-        }else {
-            alert(" Offer Used ");
         }
-    
     });
     }else{
-        alert(" Cancel the Promotion ... ");
-        window.AppliedProdPromo = 0;
-        window.AppliedProdPromoID = 0; 
+         alert(" Cancel the Promotion ... ");
+        read("ProdOffers", productID1 , function(data){
+            console.log(" Apply Promotion Offers Values -: " + JSON.stringify(data));
+            prodOffers.push(JSON.stringify(data));
+            console.log("Promotion ID "  + data.promotionID);
+            temp_promotion_ID = data.PromotionID;
+            console.log("Buy  "  + data.Buy);
+            console.log("Get  "  + data.Get);
+            console.log("Additional Value   "  + data.AddtionalValue);
+            console.log("Max Value   "  + data.MaxValue);
+            console.log("Min Value   "  + data.MinTrans);
+            console.log("PerUserApplied    "  + data.PerUserApplied);
+            console.log("ProdPromoType :"  + data.ProdPromoType);
+            console.log("GetType :"  + data.GetType);
+            console.log(" Adding Price " + data.AddingPrice);
+            console.log(" Table Product ID " + row1[1].cells[1].innerHTML);
+            console.log( " Before Applied User  " );
+            var current_row;
+            for(var i=1; i<row1.length; i++){
+               console.log("Row Cell Value " + row1[i].cells[1].innerHTML + " Product ID " + productID1);
+               if(row1[i].cells[1].innerHTML == productID1){
+                    current_row = row1[i];
+               }
+            }
+            if(parseFloat(data.PerUserApplied) > 0){
+                console.log(" After User applied ");
+                if(data.ProdPromoType === " BuyGet "){
+                    console.log(" Inside The BuyGet ");
+                    if(data.GetType === "Quantity"){
+                        alert(" Buy Get Quantity Offers Rows Values is  " + current_row.cells[1].innerHTML);
+                        alert(" Buy " + data.Buy + "  Get " + data.Get);
+                        var getQty  = current_row.cells[4].getElementsByTagName("input")[0].value;
+                        console.log(" Purchase Qty -: " + getQty);
+                        if(getQty >= data.Buy){
+                            alert(" Quantity Is Greater ");
+                            var str = current_row.cells[4].innerHTML
+                            console.log(" Current input Html -: " + str);
+                            var current_Qty = (parseInt(getQty) - parseInt(data.Get));
+                            console.log(" Current P Qty -: " + current_Qty);
+                            var res1 = 'value="' + current_Qty  + '"';
+                            var rep1 = 'value="'+ getQty +'"';
+                            var replace = str.replace(rep1, res1);
+                            console.log(" Current input Html -: " + replace);
+                            current_row.cells[4].innerHTML = replace;
+                            fillPayment();
+                            var row =  offer_row.parentNode.parentNode;
+                            var btn = row.cells[4].getElementsByTagName('input')[0];
+                            btn.style.backgroundColor = "#FF0033";
+                            btn.value = "Apply Promo";
+                            console.log(" Value is the " + btn);
+                            row.cells[4].appendChild(btn);
+                            console.log(" Successfully Offer Applied !!! Applied " + window.AppliedProdPromo + " Promotion " + window.AppliedProdPromoID + " Data Promoiton " + data.PromotionID + " Temp Promotion Id " + temp_promotion_ID);
+                            window.AppliedProdPromo = 0;
+                            window.AppliedProdPromoID = 0;
+                        }else{
+                            alert(" Buy Quantity Is Less Then Offers ");
+                        }
+                    }
+                    if(data.GetType === "Percentage"){
+    
+                        alert(" Offer BuyGet on Percentage.... ");
+                        console.log(" Data is -: " + data.get);
+                        var getQty  = current_row.cells[4].getElementsByTagName("input")[0].value;
+                        var product_price = current_row.cells[5].innerHTML
+                        console.log(" Current Qty " + getQty);
+                        if(getQty >= data.Buy){
+
+                            alert(" Percentage Beign Applied ... " + data.Buy + " Get Percentage  " + data.Get);
+                            alert(" Current Prcie Of the " + product_price);
+                            var discount_val = parseFloat(data.Get) / 100 ;
+                            alert(" Discunt Val " + discount_val);
+                            var min_disc = parseFloat(product_price) * parseFloat(discount_val);
+                            alert(" Min Discount " + min_disc);
+                            var actual_price = parseFloat(product_price) + parseFloat(min_disc);  
+                            var normal_price =   
+                            alert(" Actual Discount " +  actual_price.toFixed(2)  + " Discount Is " + min_disc + " Product Price " + product_price);
+                            //chnage the str image and replace str. 
+                            var spandata = current_row.cells[6].getElementsByTagName("input")[0]; 
+                            current_row.cells[6].innerHTML = 0;
+                            current_row.cells[6].appendChild(spandata);
+                            current_row.cells[9].innerHTML = product_price;
+                            fillPayment();
+                            var row =  offer_row.parentNode.parentNode;
+                            var btn = row.cells[4].getElementsByTagName('input')[0];
+                            btn.style.backgroundColor = "#FF0033";
+                            btn.value = "Apply Promo";
+                            console.log(" Value is the " + btn);
+                            row.cells[4].appendChild(btn);
+                            window.AppliedProdPromo =0;
+                            window.AppliedProdPromoID = 0;
+                        }
+                    }
+                }
+                if(data.ProdPromoType === " Adding Value "){
+                        alert(" Adding Value Promotion is Added ");
+                        alert(" Buy " + data.Buy + "  Get " + data.Get);
+                        alert(" Additional Value " + data.AddtionalValue  + " Adding Price " + data.AddingPrice);
+                        var getQty  = current_row.cells[4].getElementsByTagName("input")[0].value;
+                        if(getQty >= data.Buy){
+    
+                            alert(" Quantity Is Greater ");
+                            var str = current_row.cells[4].innerHTML
+                            console.log(" Current input Html -: " + str);
+                            var current_Qty = (parseInt(getQty) + parseInt(data.Get));
+                            console.log(" Current P Qty -: " + current_Qty);
+                            var res1 = 'value="' + current_Qty  + '"';
+                            var rep1 = 'value="'+ getQty +'"';
+                            var replace = str.replace(rep1, res1);
+                            console.log(" Current input Html -: " + replace);
+                            current_row.cells[4].innerHTML = replace;
+                            var current_total_Price = current_row.cells[9].innerHTML
+                            current_row.cells[9].innerHTML = parseFloat(current_total_Price) - data.AddtionalValue;
+                            fillPayment();
+                            var row =  offer_row.parentNode.parentNode;
+                            var btn = row.cells[4].getElementsByTagName('input')[0];
+                            btn.style.backgroundColor = "#FF3300";
+                            btn.value = "Apply Promo";
+                            console.log(" Value is the " + btn);
+                            row.cells[4].appendChild(btn);
+                            window.AppliedProdPromo = 0;
+                            window.AppliedProdPromoID = 0;
+                        } 
+                }
+                if(data.ProdPromoType === " Special Price "){
+                    alert(" Special Price Promotion is Adding ");
+                    var actual_price = current_row.cells[5].innerHTML; 
+                    current_row.cells[9].innerHTML = actual_price;
+                    fillPayment();
+                    var row =  offer_row.parentNode.parentNode;
+                    var btn = row.cells[4].getElementsByTagName('input')[0];
+                    btn.style.backgroundColor = "#FF0033";
+                    btn.value = "Apply Promo";
+                    console.log(" Value is the " + btn);
+                    row.cells[4].appendChild(btn);
+                    window.AppliedProdPromo = 0;
+                    window.AppliedProdPromoID = 0;
+                }
+            }
+        });
     }
 }
 var selectedRow ;
@@ -560,6 +716,7 @@ $(document).ready(function(){
         div.style.backgroundColor = "red";
         alert(" Current Net Status is " + check);
         getProductImage1();
+
      }else {
 
         div.style.backgroundColor = "yellow";
@@ -572,6 +729,7 @@ $(document).ready(function(){
 
 /************** Page Functionality  ************************/
 function setProductInfo(ItemList){
+    
     //Product Info..
     document.getElementById('lblProductName').innerText = ItemList.ProductName;
     document.getElementById('lblPrice').innerText = ItemList.LabelPrice;
@@ -672,8 +830,8 @@ function clearAllFields(){
      var length  = table1.rows.length;
      //Iterate Table Rows 
      for(var i=1; i<length; i++){
-
          console.log("--- FOR ------");
+
          var totalPrice  =  table1.rows[i].cells[9].innerHTML;
          console.log(" Product ID  " + table1.rows[i].cells[1].innerHTML + "Price " + table1.rows[i].cells[5].innerHTML +" Total Price " + table1.rows[i].cells[9].innerHTML);
          var price = table1.rows[i].cells[5].innerHTML; 
@@ -701,7 +859,48 @@ function clearAllFields(){
    lblspan.innerHTML = num ;
  }
  function OnPay(){
+     console.log("-----------Payment Section--------------");
+     var total = 0;
+     var totaltax = 0;
+     var CustomerID = document.getElementById('txtCustomerID').value;
+     var table1 = document.getElementById("CartTable");
+     for(var i=1; i<table1.rows.length; i++){
+
+         var ProductCode = table1.rows[i].cells[1].innerHTML;
+         var Dim = table1.rows[i].cells[3].innerHTML;
+         var pur_Qty = table1.rows[i].cells[4].innerHTML;
+         var LabelPrice = table1.rows[i].cells[5].innerHTML;
+         var Discount1 = table1.rows[i].cells[6].innerHTML;
+         var Discount2 = table1.rows[i].cells[7].innerHTML;
+         var SellingPrice = table1.rows[i].cells[8].innerHTML;
+         var TotalPrice = table1.rows[i].cells[9].innerHTML;
+         var SellsOrderId = document.getElementById('txtTransactionIDShow').value;
+        //InsertSellsOrderItem();
+        console.log("Product Code " + ProductCode + " Dimension -:" + Dim + " Purchase Qty " + pur_Qty + " Label Price " + LabelPrice + " Discount1 " + Discount1 + " Discount2 " + Discount2 + "Selling Price " + SellingPrice + " Total Price " + TotalPrice );
+        if(window.flag == 1){
+            //Update the SellsOrderItems
+
+        } else { 
+            //Insert New SellsOrder
+            //InsertSellsOrderItem();
+        }
+        var total = lblTotalAmount.text;
+        var VoucherDiscount = 0;
+        var TotalDiscount = 0;
+        var PaymentModeCharge =0;
+        var TotalPay=0;
+        var Remark =0;
+        var AddedBy =0;
+        var CustomerTransaction=0;
+        var IsDraft=0;
+        var Status=0;
+        var StoreID =0;
+        var TerminalID=0;
+        //InsertSellsOrder();
+
+     }
     SweetAlertInfo("On Pay");
+    console.log("----------- End Payment Section --------------");
  }
  function OnHold(){
     SweetAlertInfo("Holding The Values ");
@@ -823,7 +1022,6 @@ function BillProm(){
            var data1 = JSON.parse(data);
            for(var i=0; i<data1.length; i++){
                ProdofferImage[i] = {
-
                    ID : data1[i].ID  , 
                    FriendlyName : data1[i].FriendlyName , 
                    PromomCode : data1[i].PromoCode , 
@@ -850,6 +1048,7 @@ function BillProm(){
    });
 }
 function ProductPromoData(){
+
     var productPromo = [];
     FetchOnProductPromo("104" , function(data){
         console.log(" Get Data From Product Promotion " + JSON.stringify(data)); 
@@ -880,7 +1079,8 @@ function ProductPromoData(){
     });
 }
 function InsertSellsOrderItem(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy ,  UpdatedBy , UpdatedOn , StoreID){
-   var SellsOrderItems = [];
+   
+    var SellsOrderItems = [];
    SellsOrderItems[0] = {
        SellsOrderId : SellsOrderId , 
        ProductId : ProductId ,
@@ -927,7 +1127,7 @@ function getProductImage1(){
         var obj = getProductImage(104 , function(data){ 
         var data =  JSON.parse(data);
         for(var i=0 ; i<data.length; i++){
-            
+
             productImage[i] = { SellsOrderItemID : data[i].SellsOrderItemID , productID : data[i].productID , ProductName : data[i].ProductName ,unitOfMeasurement : data[i].unitOfMeasurement,
                 Qty : data[i].Qty , Price : data[i].Price  , image : data[i].image , size : data[i].size , Discount : data[i].Discount  , MaxValue : data[i].MaxValue , Quantity : data[i].Quantity , 
                 IsReturn: data[i].IsReturn, IsDraft: data[i].IsDraft, IsQtyTxtOn: data[i].IsQtyTxtOn , IsDiscImgOn  : data[i].IsDiscImgOn  
@@ -1025,7 +1225,9 @@ function checkForClick() {
 }
 console.log(" Window Load Event Listener Start");
 window.addEventListener('load', function() {
+
 function updateOnlineStatus(event) {
+
     var condition = navigator.onLine ? "online" : "offline";
     var div = document.getElementById("offChng");
     if(condition == "online"){

@@ -99,6 +99,16 @@ function remove(tablename , dataID) {
       //alert("");
     }
 }
+function clearTableData(tablename ,  callback){
+   var objectstore = this.db.transaction([tablename], "readwrite").objectStore(tablename);
+   var objreq = objectstore.clear();
+   objreq.onsucess = function(event){
+         callback("SUCESS",event);
+   }
+   objreq.onerror = function(event){
+      callback("FAILED", event);
+   }
+}
 function update(tablename , dataID , value){
    var objectStore = this.db.transaction(tablename).objectStore(tablename);
    var req = objectStore.openCursor();
