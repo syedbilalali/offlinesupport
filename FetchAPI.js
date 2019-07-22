@@ -96,6 +96,16 @@ function InsertPaymentTransaction(){
 function InsertBillPromoCode(){ 
     //Insert the Used Offer Details 
 }
+function FetchHoldValues(){
+    $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/FetchHoldInvoices",[], function(data, status){
+   //     console.log(data);
+       callback(data);
+   }).done(function(){ 
+       console.info(" Successfully Insert Sells Order Items ");
+      }).fail(function(){ 
+      console.warn("Error");       
+   });  
+}
 function loadProduct(){
     var obj;
     obj = getProductImage(104);

@@ -421,7 +421,7 @@
                                             <input type="button" name="btnHold" value="Hold [F8]"  id="btnHold"  onclick="doHold()" class="btn  btn-info btn_style1"  />
                                         </div>
                                         <div class="col-md-4 tt">
-                                            <input type="button" name="btn_Retrieve" data-popup-open="popup-5" value="Retrive Hold" onclick="" id="btn_Retrieve" class="btn btn-info btn_style1" />
+                                            <input type="button" name="btn_Retrieve" value="Retrive Hold" onclick="doRetrival()" id="btn_Retrieve" class="btn btn-info btn_style1" />
                                             <input type="button" name="btnPrint" data-popup-open="popup-2"  value="Print [E9]" onclick="RetriveData()" id="btnPrint" class="btn btn-danger btn_style1"  />
                                         </div>
                                         <div class="col-md-4 t2">
@@ -652,25 +652,15 @@
         </div>
             <div class="popup" data-popup="popup-5">
                 <div class="popup-inner">
-                        <div >
-                <table class="table table-bordered gvDatatable" cellspacing="0" cellpadding="3" rules="all" id="retriveTable" style="background-color:White;border-color:#CCCCCC;border-width:1px;border-style:None;border-collapse:collapse;">
-                    <tbody><tr style="color:White;background-color:#006699;font-weight:bold;">
-                        <th scope="col">Order ID</th><th scope="col">Total</th><th scope="col">Action</th>
+                        <div>
+                    <table class="table table-bordered gvDatatable" cellspacing="0" cellpadding="3" rules="all" id="retriveTable" style="background-color:White;border-color:#CCCCCC;border-width:1px;border-style:None;border-collapse:collapse;">
+                    <tbody>
+                    <tr style="color:White;background-color:#006699;font-weight:bold;">
+                            <th scope="col">Order ID</th><th scope="col">Total</th><th scope="col">Action</th>
                     </tr>
-                    <tr style="color:#000066;">
-                        <td>
-                            <span id="GridView3_lb_SellsOrderId_0"></span>
-                        </td>
-                        <td>
-                            <span id="GridView3_lb_CustomerID_0"></span>
-                        </td>
-                        <td>
-                            <input type="submit" name="rtvHoldRetrive" value="Retrieve" onclick="" id="rtvHoldRetrive">
-                            <input type="submit" name="rtvHoldDelete" value="Delete" onclick="" id="rtvHoldDelete">
-                        </td>
-                    </tr>
-                </tbody></table>
-            </div>
+                </tbody>
+                </table>
+                </div>
                 <a class="popup-close" data-popup-close="popup-5" href="#">x</a>
                     </div>
             </div>

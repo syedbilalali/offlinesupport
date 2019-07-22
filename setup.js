@@ -70,6 +70,10 @@ function init(){
         //Load Value Into Db From  API
         //Load Product Details 
             getProductImage1();
+            set(function(){
+
+            } , 2000);
+
     });
     $("#txtSearch").autocomplete({ 
         source: function (request, response) {
@@ -600,7 +604,6 @@ function validate(val){
 
   //console.log(" Req Qty  -: " + qty + " Avail Qty _:" + stock_qty + " Product Price " + product_price);
    if(qty.match(/^[0-9]+$/) != null){
-
        if(parseInt(qty) <= parseInt(stock_qty)){
             var totalprice  =  parseInt(qty) * parseFloat(product_price);
             current_row.cells[9].innerHTML = totalprice
@@ -631,6 +634,7 @@ function updateRow(selectRow){
     var table1 = document.getElementById("CartTable");
 }
 function removeRow(item){
+
     var table1 = document.getElementById("CartTable");
     var row = table1.rows;
     if(row.length > 0 ){
@@ -713,6 +717,7 @@ $(document).ready(function(){
      var check = navigator.onLine ? "online" : "offline";
      var div = document.getElementById("offChng");
      if(check === "online"){
+
         div.style.backgroundColor = "red";
         alert(" Current Net Status is " + check);
         console.log(" Get Product Images ");
@@ -721,13 +726,14 @@ $(document).ready(function(){
         FetchBillOffersFromOnline();
         console.log(" Get Product Promo Data ");
         ProductPromoData();
-        
+
      }else {
 
         div.style.backgroundColor = "yellow";
         console.log(" Net is offline ");
         alert(" Current Net Status is " + check);
         loadProductFromDB();
+
      }
 });
 /*************** End Of the Main Program ********************/
@@ -763,24 +769,23 @@ function setInitialRow(){
  }
 function doHold(){
     //Holding the Value.
-
     var table1 = document.getElementById("CartTable");
     var ddlCSV = document.getElementById('ddlCSV');
     var row = table1.rows;
-    if(table1.row.length == 1 ){
+    if(row.length == 1 ){
         SweetAlertInfo(" Sorry No Item Found... ");
         return;
     }
     if((ddlCSV.selectedIndex  > 0) || (ddlCSV.selectedIndex == 0) ){
         if((txtCustomerID.value != "" || (ddlCSV.selectedIndex==0))){
+        
             if(txtTransactionID.value != null && txtTransactionID.value != "" ){
-
                 //Delete Old Transaction
                 deleteOldTransaction(txtTransactionID.value);
+                console.log("After Delete Transaction ");
                 var total =0;
                 var lblPrice = 0;
                 for(var i=1; i<row.length; i++){
-
                     var ProductID = row[i].cells[1].innerHTML;
                     var Dim = row[i].cells[3].innerHTML;
                     var Qty = row[i].cells[4].getElementsByTagName('input')[0].value;
@@ -800,23 +805,57 @@ function doHold(){
                     //Add Data In the Sells Order Table Where IsDraft  Value is 1  
                     InsertSellsOrderItem(txtTransactionID.text,ProductID,Dim , PromoRemark , Qty , LabelPrice , Discount1 , Discount2 , SellingPrice , TotalPrice , Remark , AddedBy , AddedOn , "104");
                 }
+                console.log(" Sells Order Items Inserted... ");
+                var result = 1;
+                var tax = 0;
+                var customerID = 0;
+                var total = 0;
+                var totalDiscount = 0;
+                var VoucherDiscount  = 0;
+                var PaymentModeCharge = 0;
+                var TotalPay = 0;
+                var Remark1 = "REMARK";
+                var AddedBy1 = 162;
+                var CustomerTransaction = txtTransactionID.value;
+                var IsDraft = 0;
+                var Status = 1;
+                var StoreID = 104;
+                var TerminalID = "000796";
+                InsertSellsOrder(txtTransactionID.value ,txtCustomerID.value,total , tax ,VoucherDiscount , totalDiscount , PaymentModeCharge , TotalPay , Remark1 , AddedBy1 , CustomerTransaction , Status , IsDraft , StoreID , TerminalID);
+                console.log(" Insert Sells Order Completed ");
+                if(result == 1){
+                    //Pay button , Hold make Disable
+                    console.log("Before Remove All Rows");
+                    removeAllRow();
+                    console.log("After Remove All Rows");
+                    var btnHold = document.getElementById("btnHold"); 
+                    var btnPay = document.getElementById("btnPay");
+                    btnPay.disabled = true;
+                    btnHold.disabled = true;
+                    console.log(" Sucesss ");
+                    SweetAlertInfo(" Successfully Order On Hold !!! ");
+                }   
+            }else {
+
+                SweetAlertInfo(" TransactionID not found ....  ");    
             }
 
         }else {
-            SweetAlertInfo(" Please Enter CustomerID ");
+            SweetAlertInfo(" Please Enter CustomerID  ");
         }
     }
-  
-    console.log(" Table Length -: " + row.length);
-    for(var j=row.length-1; j>0; j--){
-        console.log(" Delete Value is " + j +  " " );
-        document.getElementById("CartTable").deleteRow(j);
+}
+function doRetrival(){
+    readSellOrder();
+    $('[data-popup="popup-5"]').fadeIn(350);
+}
+function removeAllRow(){
+    console.log(" Remove All Row is Running ");
+    var table1 = document.getElementById("CartTable");
+    for(var j = table1.rows.length - 1; j>0; j--){
+        table1.deleteRow(j);
     }
-    console.log(" Length " + row.length);
-    if(row.length  <= 1){
     setEmptyRow();
-    }
-    alert(" Item Successfully On Hold... ");
 }
 function uniqueNumber() {
     var date = Date.now();
@@ -939,7 +978,7 @@ function clearAllFields(){
         console.log("Product Code " + ProductCode + " Dimension -:" + Dim + " Purchase Qty " + pur_Qty + " Label Price " + LabelPrice + " Discount1 " + Discount1 + " Discount2 " + Discount2 + "Selling Price " + SellingPrice + " Total Price " + TotalPrice );
         if(window.flag == 1){
             //Update the SellsOrderItems
-
+            
         } else { 
             //Insert New SellsOrder
             InsertSellsOrderItem(SellsOrderId,ProductCode ,Dim , " No REMARK ", pur_Qty ,LabelPrice ,Discount1 , Discount2 ,SellingPrice ,TotalPrice ,"REMARK" , "" ,"" ,"" , "104");
@@ -960,9 +999,10 @@ function clearAllFields(){
      var TerminalID=0;
      InsertSellsOrder("" , txtCustomerID.text , total , total_tax,VoucherDiscount , TotalDiscount ,PaymentModeCharge , TotalPay , Remark, AddedBy , CustomerTransaction , "1" , "1", "104", "2323443" );
      SweetAlertInfo(" Sucessfully Paid...  ");
-    console.log("----------- End Payment Section --------------");
+     console.log("----------- End Payment Section --------------");
  }
  function OnHold(){
+
     SweetAlertInfo("Holding The Values ");
     var table1 = document.getElementById("CartTable");
     console.log(" Table Length " + table1.rows.length);
@@ -983,7 +1023,6 @@ function clearAllFields(){
      console.log(" Actual Tax " + actualtax);
      discount_price = 0;
      if(includetax){
-
          var sales_tax = actualtax / 100 ;
          current_tax = sales_tax * parseFloat(discount_price);
      }else{
@@ -1033,8 +1072,9 @@ function FetchBillOffersFromOnline(){
     FetchOnBillTotalPromo(104 , function(data){
         var offers  = JSON.parse(data);
         console.log("Bill Offers" + JSON.stringify(offers));
-        for(var i =0; i<offers.length; i++){
-          billOffers[i] = { ID : data[i].ID , FriendlyName : data[i].FriendlyName , PromoCode : data[i].PromoCode , PromoType :data[i].PromoType , DiscountType : data[i].DiscountType , Discount : data[i].Discount , AddedOn : data[i].AddedOn , ExpiredOn: data[i].ExpiredOn , IsActive : data[i.IsActive] , MaxValue : data[i].MaxValue , MinTrans : data[i].MinTrans , PerUserApplied : data[i].PerUserApplied , IsAllProducts : data[i].IsAllProducts , IsTotalPurchasePromo : data[i].IsTotalPurchasePromo , PromoCategory : data[i].PromoCategory , SpecialPrice : data[i].SpecialPrice , RelevantID : data[i].RelevantID , Discount2 : data[i].Discount2  , IsProductFree : data[i].IsProductFree }; 
+        for(var i=0; i<offers.length; i++){
+          billOffers[i] = { ID : data[i].ID, FriendlyName : data[i].FriendlyName , PromoCode : data[i].PromoCode , PromoType :data[i].PromoType , DiscountType : data[i].DiscountType , Discount : data[i].Discount , AddedOn : data[i].AddedOn , ExpiredOn: data[i].ExpiredOn , IsActive : data[i.IsActive] , MaxValue : data[i].MaxValue , MinTrans : data[i].MinTrans , PerUserApplied : data[i].PerUserApplied , IsAllProducts : data[i].IsAllProducts , IsTotalPurchasePromo : data[i].IsTotalPurchasePromo , PromoCategory : data[i].PromoCategory , SpecialPrice : data[i].SpecialPrice , RelevantID : data[i].RelevantID , Discount2 : data[i].Discount2  , IsProductFree : data[i].IsProductFree }; 
+          console.log(" Value is " + JSON.stringify(billOffers[i]));
           add(window.db , "BillOffers", billOffers[i]);  
         }
     });
@@ -1046,20 +1086,49 @@ function getCurrentTax(){
         window.CurrentTax = parseFloat(data, 10);
     }); 
 }
+function readSellOrder(){
+    console.log(" Reading the Sells Order");
+    var tableRetrive = document.getElementById("retriveTable");
+    deleteTableRow("retriveTable" , 1,)
+    readAll("SellsOrder", function(value){
+        console.log("IsDraft " +value.IsDraft + " Status " + value.Status);
+       if(value.IsDraft === 0 && value.Status === 1){
+         console.log(" Hold Transaction Value ");
+         console.log("SellsOrderID  " +  value.SellsOrderId);
+         console.log(" TerminalID " + value.TerminalID);
+         var row = tableRetrive.insertRow(tableRetrive.rows.length);
+         row.style.color = "#000066";
+         var cell1 = row.insertCell(0);
+         var cell2 = row.insertCell(1);
+         var cell3 = row.insertCell(2);
+         cell1.innerHTML = value.SellsOrderId;
+         cell2.innerHTML = value.TerminalID;
+         var str =  '<input type="submit" name="rtvHoldRetrive" value="Retrieve" onclick="" id="rtvHoldRetrive">' +
+         '<input type="submit" name="rtvHoldDelete" value="Delete" onclick="" id="rtvHoldDelete">'
+        cell3.innerHTML = str; 
+       }     
+    })   
+}
+function deleteTableRow( tabelname , startIndex , endIndex ){
+    var table1 = document.getElementById(tabelname);
+    var length  =  table1.rows.length;
+    if(startIndex <= 0 && endIndex <= length){
+          for(var i=startIndex; i<endIndex; i++){
+                table1.deleteRow(i);
+          }  
+    }else {
+        throw "OutOfIndexException";
+    }
+}
 function deleteOldTransaction(SellSOrderId){
-    remove1("SellsOrderItem",SellSOrderId , function(reponse){ 
+    remove1("SellsOrderItems",SellSOrderId , function(response){ 
          if(response == "Success" ){
-            console.log(" Successfully Removed ")
+            console.log("  Successfully Removed  ");
          }
-         if(reponse == "Error"){
+         if(response == "Error"){
             console.log("Something Wrong at deleting.... ");
          }
     });
-}
-function FetchProdOfferFromOnline(){
-    console.log(" Get Product Offer From the Api ");
-    var prodoffers
-
 }
 function SaveProductImage(StoreID ){
 
@@ -1068,6 +1137,7 @@ function SaveProductImage(StoreID ){
     var obj = getProductImage(StoreID , function(data){ 
     var data =  JSON.parse(data);
     for(var i=0 ; i<data.length;  i++){
+
         productImage[i] = { 
             SellsOrderItemID : data[i].SellsOrderItemID , 
             productID : data[i].productID , 
@@ -1188,9 +1258,7 @@ function updateSellsOrderItems(SellsOrderId  ,ProductId , Dim , PromoRemark , Qt
 function InsertSellsOrder(SellsOrderId,  CustomerId, Total,  Tax,  VoucherDiscount, TotalDiscount ,  PaymentModeCharge ,  TotalPay , Remark ,  AddedBy ,  CustomerTransaction , Status , IsDraft ,  StoreID ,  TerminalID){
     
     var SellsOrder = [];
-
     SellsOrder[0] = {
-
         SellsOrderId : SellsOrderId ,
         CustomerId : CustomerId , 
         Total : Total,  
