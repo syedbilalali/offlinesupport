@@ -21,7 +21,6 @@ request.onsuccess = function(event) {
    console.log("Data Created Success: "+ db);
 };
 request.onupgradeneeded = function(event) {
-   
    var db = event.target.result;
    var objectStore = db.createObjectStore('ProductImage', { keyPath: 'productID'});
    objectStore.createIndex("ProductName", "ProductName", { unique: false });
@@ -100,6 +99,17 @@ function remove(tablename , dataID) {
     request.onerror = function(event){
       //alert("");
     }
+}
+function remove1(tablename , dataID , callback) {
+   var request = db.transaction([tablename], "readwrite").objectStore(tablename).delete(dataID);
+   request.onsuccess = function(event) {
+     // alert("Kenny's entry has been removed from your database.");
+     callback("Success");
+   }
+   request.onerror = function(event){
+     //alert("");
+     callback("Error");
+   }
 }
 function clearTableData(tablename ,  callback){
    var objectstore = this.db.transaction([tablename], "readwrite").objectStore(tablename);

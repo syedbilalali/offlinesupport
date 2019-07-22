@@ -538,6 +538,7 @@ function applyProductPromo(data){
                     }
                 }
                 if(data.ProdPromoType === " Adding Value "){
+                    
                         alert(" Adding Value Promotion is Added ");
                         alert(" Buy " + data.Buy + "  Get " + data.Get);
                         alert(" Additional Value " + data.AddtionalValue  + " Adding Price " + data.AddingPrice);
@@ -714,8 +715,13 @@ $(document).ready(function(){
      if(check === "online"){
         div.style.backgroundColor = "red";
         alert(" Current Net Status is " + check);
+        console.log(" Get Product Images ");
         getProductImage1();
-
+        console.log("Get Bill Offers Into DB  ");
+        FetchBillOffersFromOnline();
+        console.log(" Get Product Promo Data ");
+        ProductPromoData();
+        
      }else {
 
         div.style.backgroundColor = "yellow";
@@ -753,31 +759,62 @@ function setInitialRow(){
  function getTimeStamp(){
     var d = new Date();
     var n = d.toISOString();
-    return  n.replace("Z"," ").replace("T"," "); 
+    return  n.replace("Z"," ").replace("T",""); 
  }
 function doHold(){
     //Holding the Value.
-    var table1 = document.getElementById("CartTable");
-    var row = table1.rows;
-    for(var i=1; i<row.length; i++){
 
-        var ProductID = row[i].cells[1].innerHTML;
-        var Dim = row[i].cells[3].innerHTML;
-        var Qty = row[i].cells[4].getElementsByTagName('input')[0].value;
-        var LabelPrice = row[i].cells[5].innerHTML;
-        var Discount1  = row[i].cells[6].getElementsByTagName('span')[0].innerHTML; 
-        var Discount2 = row[i].cells[7].innerHTML;
-        var PromoRemark = "No Remark";
-        var SellingPrice = row[i].cells[8].innerHTML;
-        var TotalPrice = row[i].cells[9].innerHTML;
-        var Remark = "No Remark";
-        var AddedBy  = "104";
-        var AddedOn  = getTimeStamp();
-        var IsReturn  = 1;
-        console.log("ProductID -:" + ProductID + " Qty " + Qty + "  Label Price " + LabelPrice + " Discount1 " + Discount1);
-        console.log("Discount2 " + Discount2 + "Selling Price " + SellingPrice + " Total Price " + TotalPrice + "Added On " + getTimeStamp());
-        //Add Data In the Sells Order Table Where IsDraft  Value is 1  
-        InsertSellsOrderItem("",ProductID,Dim , PromoRemark , Qty , LabelPrice , Discount1 , Discount2 , SellingPrice , TotalPrice , Remark , AddedBy , AddedOn , "104");
+    var table1 = document.getElementById("CartTable");
+    var ddlCSV = document.getElementById('ddlCSV');
+    var row = table1.rows;
+    if(table1.row.length == 1 ){
+        SweetAlertInfo(" Sorry No Item Found... ");
+        return;
+    }
+    if((ddlCSV.selectedIndex  > 0) || (ddlCSV.selectedIndex == 0) ){
+        if((txtCustomerID.value != "" || (ddlCSV.selectedIndex==0))){
+            if(txtTransactionID.value != null && txtTransactionID.value != "" ){
+
+                //Delete Old Transaction
+                deleteOldTransaction(txtTransactionID.value);
+                var total =0;
+                var lblPrice = 0;
+                for(var i=1; i<row.length; i++){
+
+                    var ProductID = row[i].cells[1].innerHTML;
+                    var Dim = row[i].cells[3].innerHTML;
+                    var Qty = row[i].cells[4].getElementsByTagName('input')[0].value;
+                    var LabelPrice = row[i].cells[5].innerHTML;
+                    var Discount1  = row[i].cells[6].getElementsByTagName('span')[0].innerHTML; 
+                    var Discount2 = row[i].cells[7].innerHTML;
+                    var PromoRemark = "No Remark";
+                    var SellingPrice = row[i].cells[8].innerHTML;
+                    var TotalPrice = row[i].cells[9].innerHTML;
+                    var Remark = "No Remark";
+                    var AddedBy  = "104";
+                    var AddedOn  =  " " + getTimeStamp() + " ";
+                    var IsReturn  = 1;
+                    console.log(" Indexed Is " + i);
+                    console.log("ProductID -:" + ProductID + " Qty " + Qty + "  Label Price " + LabelPrice + " Discount1 " + Discount1);
+                    console.log("Discount2 " + Discount2 + "Selling Price " + SellingPrice + " Total Price " + TotalPrice + "Added On " + getTimeStamp());
+                    //Add Data In the Sells Order Table Where IsDraft  Value is 1  
+                    InsertSellsOrderItem(txtTransactionID.text,ProductID,Dim , PromoRemark , Qty , LabelPrice , Discount1 , Discount2 , SellingPrice , TotalPrice , Remark , AddedBy , AddedOn , "104");
+                }
+            }
+
+        }else {
+            SweetAlertInfo(" Please Enter CustomerID ");
+        }
+    }
+  
+    console.log(" Table Length -: " + row.length);
+    for(var j=row.length-1; j>0; j--){
+        console.log(" Delete Value is " + j +  " " );
+        document.getElementById("CartTable").deleteRow(j);
+    }
+    console.log(" Length " + row.length);
+    if(row.length  <= 1){
+    setEmptyRow();
     }
     alert(" Item Successfully On Hold... ");
 }
@@ -899,7 +936,6 @@ function clearAllFields(){
          var SellingPrice = table1.rows[i].cells[8].innerHTML;
          var TotalPrice = table1.rows[i].cells[9].innerHTML;
          var SellsOrderId = document.getElementById('txtTransactionIDShow').value;
-     
         console.log("Product Code " + ProductCode + " Dimension -:" + Dim + " Purchase Qty " + pur_Qty + " Label Price " + LabelPrice + " Discount1 " + Discount1 + " Discount2 " + Discount2 + "Selling Price " + SellingPrice + " Total Price " + TotalPrice );
         if(window.flag == 1){
             //Update the SellsOrderItems
@@ -910,6 +946,7 @@ function clearAllFields(){
         }
      }
      var total = lblTotalAmount.text;
+     var total_tax =0;
      var VoucherDiscount = 0;
      var TotalDiscount = 0;
      var PaymentModeCharge =0;
@@ -921,8 +958,8 @@ function clearAllFields(){
      var Status=0;
      var StoreID =0;
      var TerminalID=0;
-     //InsertSellsOrder();
-    SweetAlertInfo("On Pay");
+     InsertSellsOrder("" , txtCustomerID.text , total , total_tax,VoucherDiscount , TotalDiscount ,PaymentModeCharge , TotalPay , Remark, AddedBy , CustomerTransaction , "1" , "1", "104", "2323443" );
+     SweetAlertInfo(" Sucessfully Paid...  ");
     console.log("----------- End Payment Section --------------");
  }
  function OnHold(){
@@ -991,10 +1028,11 @@ function getProductsFromDB(key , callbackFn){
 }
 //Get Bill Offers From API TO DB
 function FetchBillOffersFromOnline(){
-    console.log("Get Product Offers FROM API  ");
+    console.log(" Get Bill Offers FROM API  ");
     var billOffers = [];
     FetchOnBillTotalPromo(104 , function(data){
         var offers  = JSON.parse(data);
+        console.log("Bill Offers" + JSON.stringify(offers));
         for(var i =0; i<offers.length; i++){
           billOffers[i] = { ID : data[i].ID , FriendlyName : data[i].FriendlyName , PromoCode : data[i].PromoCode , PromoType :data[i].PromoType , DiscountType : data[i].DiscountType , Discount : data[i].Discount , AddedOn : data[i].AddedOn , ExpiredOn: data[i].ExpiredOn , IsActive : data[i.IsActive] , MaxValue : data[i].MaxValue , MinTrans : data[i].MinTrans , PerUserApplied : data[i].PerUserApplied , IsAllProducts : data[i].IsAllProducts , IsTotalPurchasePromo : data[i].IsTotalPurchasePromo , PromoCategory : data[i].PromoCategory , SpecialPrice : data[i].SpecialPrice , RelevantID : data[i].RelevantID , Discount2 : data[i].Discount2  , IsProductFree : data[i].IsProductFree }; 
           add(window.db , "BillOffers", billOffers[i]);  
@@ -1007,6 +1045,21 @@ function getCurrentTax(){
         console.log(" Offers Details Is " + data); 
         window.CurrentTax = parseFloat(data, 10);
     }); 
+}
+function deleteOldTransaction(SellSOrderId){
+    remove1("SellsOrderItem",SellSOrderId , function(reponse){ 
+         if(response == "Success" ){
+            console.log(" Successfully Removed ")
+         }
+         if(reponse == "Error"){
+            console.log("Something Wrong at deleting.... ");
+         }
+    });
+}
+function FetchProdOfferFromOnline(){
+    console.log(" Get Product Offer From the Api ");
+    var prodoffers
+
 }
 function SaveProductImage(StoreID ){
 
@@ -1081,7 +1134,6 @@ function BillPromo(){
    });
 }
 function ProductPromoData(){
-
     var productPromo = [];
     FetchOnProductPromo("104" , function(data){
         console.log(" Get Data From Product Promotion " + JSON.stringify(data)); 
@@ -1112,7 +1164,6 @@ function ProductPromoData(){
     });
 }
 function InsertSellsOrderItem(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy , AddedOn ,  StoreID){
-   
     var SellsOrderItems = [];
     SellsOrderItems[0] = {
        SellsOrderId : SellsOrderId , 
@@ -1133,12 +1184,13 @@ function InsertSellsOrderItem(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty
     add(window.db , "SellsOrderItems"  , SellsOrderItems[0]);
 }
 function updateSellsOrderItems(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy ,  UpdatedBy , UpdatedOn , StoreID){
-
-
 }
 function InsertSellsOrder(SellsOrderId,  CustomerId, Total,  Tax,  VoucherDiscount, TotalDiscount ,  PaymentModeCharge ,  TotalPay , Remark ,  AddedBy ,  CustomerTransaction , Status , IsDraft ,  StoreID ,  TerminalID){
+    
     var SellsOrder = [];
+
     SellsOrder[0] = {
+
         SellsOrderId : SellsOrderId ,
         CustomerId : CustomerId , 
         Total : Total,  
@@ -1163,7 +1215,6 @@ function getProductImage1(){
         var obj = getProductImage(104 , function(data){ 
         var data =  JSON.parse(data);
         for(var i=0 ; i<data.length; i++){
-
             productImage[i] = { SellsOrderItemID : data[i].SellsOrderItemID , productID : data[i].productID , ProductName : data[i].ProductName ,unitOfMeasurement : data[i].unitOfMeasurement,
                 Qty : data[i].Qty , Price : data[i].Price  , image : data[i].image , size : data[i].size , Discount : data[i].Discount  , MaxValue : data[i].MaxValue , Quantity : data[i].Quantity , 
                 IsReturn: data[i].IsReturn, IsDraft: data[i].IsDraft, IsQtyTxtOn: data[i].IsQtyTxtOn , IsDiscImgOn  : data[i].IsDiscImgOn  
