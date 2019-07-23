@@ -258,6 +258,7 @@ function setDummyRow(ItemList , discOffer){
     }
     if(addprodflag == 1){
 
+
         var row = table1.insertRow(table1.rows.length);
         row.style.backgroundColor = "#F7F3F6";
         row.style.color = "#333333";
@@ -765,7 +766,7 @@ function setInitialRow(){
  function getTimeStamp(){
     var d = new Date();
     var n = d.toISOString();
-    return  n.replace("Z"," ").replace("T",""); 
+    return  n.replace("Z"," ").replace("T"," "); 
  }
 function doHold(){
     //Holding the Value.
@@ -783,7 +784,7 @@ function doHold(){
                 //Delete Old Transaction
                 deleteOldTransaction(txtTransactionID.value);
                 console.log("After Delete Transaction ");
-                var total =0;
+                var total = 0;
                 var lblPrice = 0;
                 for(var i=1; i<row.length; i++){
                     var ProductID = row[i].cells[1].innerHTML;
@@ -846,8 +847,18 @@ function doHold(){
     }
 }
 function doRetrival(){
-    readSellOrder();
+    var tableretrive = document.getElementById("retriveTable");
+    console.log("Retrival Length " + tableretrive.rows.length);
+
+    for(var j=1; j<tableretrive.rows.length; j++){
+        tableretrive.deleteRow(j);
+        console.log(" Row Deleted " + j);
+    } 
+    if(tableretrive.rows.length == 1){
+        readSellOrder();
     $('[data-popup="popup-5"]').fadeIn(350);
+    }
+    
 }
 function removeAllRow(){
     console.log(" Remove All Row is Running ");
@@ -1009,7 +1020,6 @@ function clearAllFields(){
     console.log("------- For Holding Value --------");
     for(var i=1; i<table1.rows.length; i++){
         console.log("ProdUct ID " + table1.rows[i].cells[2].innerHTML);
-
     }
     console.log("------- End Holding Value --------");
  }
@@ -1087,15 +1097,14 @@ function getCurrentTax(){
     }); 
 }
 function readSellOrder(){
+    
     console.log(" Reading the Sells Order");
     var tableRetrive = document.getElementById("retriveTable");
-    deleteTableRow("retriveTable" , 1,)
-    readAll("SellsOrder", function(value){
-        console.log("IsDraft " +value.IsDraft + " Status " + value.Status);
-       if(value.IsDraft === 0 && value.Status === 1){
-         console.log(" Hold Transaction Value ");
-         console.log("SellsOrderID  " +  value.SellsOrderId);
-         console.log(" TerminalID " + value.TerminalID);
+    console.log(" Length Of Retrive" + tableRetrive.rows.length);
+    console.log(" Before Reading The Data " + tableRetrive.rows.length);
+    var index =0;
+    readAll("SellsOrder", function(value){     
+        if(value.IsDraft === 0 && value.Status === 1){    
          var row = tableRetrive.insertRow(tableRetrive.rows.length);
          row.style.color = "#000066";
          var cell1 = row.insertCell(0);
@@ -1103,11 +1112,31 @@ function readSellOrder(){
          var cell3 = row.insertCell(2);
          cell1.innerHTML = value.SellsOrderId;
          cell2.innerHTML = value.TerminalID;
-         var str =  '<input type="submit" name="rtvHoldRetrive" value="Retrieve" onclick="" id="rtvHoldRetrive">' +
-         '<input type="submit" name="rtvHoldDelete" value="Delete" onclick="" id="rtvHoldDelete">'
-        cell3.innerHTML = str; 
-       }     
-    })   
+            var str =  '<input type="submit" name="rtvHoldRetrive" value="Retrieve" onclick="retrivalRertive(this);" id="rtvHoldRetrive">' +
+                '<input type="submit" name="rtvHoldDelete" value="Delete" onclick="retrivalDelete(this)" id="rtvHoldDelete">'
+            cell3.innerHTML = str; 
+            }
+    });  
+}
+function retrivalDelete(response){
+
+    var cur_row = response.parentNode.parentNode;
+    var val = cur_row.cells[0].innerHTML;
+    SweetAlertInfo(" Hold Value Deleted ... " + val);
+    cur_row.parentNode.removeChild(cur_row);
+}
+function retrivalRertive(response){ 
+    console.log("---------Retrive--------------");
+    var cur_row = response.parentNode.parentNode;
+    var val = cur_row.cells[0].innerHTML;
+    SweetAlertWarning("Hold Value Retrive ..." + val );
+  //  read("SellsOrderItems" ,val , function(data){
+       // setDummyRow();
+   //    console.log("SellsOrderID " + data.SellsOrderID);
+  //     getData(data.ProductId);
+
+   // });
+    console.log("---------End Retrive--------------");
 }
 function deleteTableRow( tabelname , startIndex , endIndex ){
     var table1 = document.getElementById(tabelname);
@@ -1130,8 +1159,19 @@ function deleteOldTransaction(SellSOrderId){
          }
     });
 }
+function getSellsOrder(SellsOrderID){
+    read("SellsOrder",SellsOrderID , function(data){
+        console.log("SellsOrderItems " + data.SellsOrderId);
+        console.log("Customer Transaction is  " + data.CustomerTransaction );
+    });
+}
+function getSellsOrderItems(SellsOrderItemID){
+    read("SellsOrderItems",SellsOrderItemID , function(data){
+        console.log(" Data Is" + data.SellsOrderId);
+        console.log("Product ID " + data.ProductId);
+    });
+}
 function SaveProductImage(StoreID ){
-
     //Fetch Product Image and Save To Local Indexed DB
     var  productImage  = []; 
     var obj = getProductImage(StoreID , function(data){ 

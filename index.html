@@ -437,7 +437,7 @@
                                     <div class="card-body row no-gutters align-items-center">
                                         <!--end of col-->
                                         <div class="col">
-                                            <input name="txtSearch" type="text" maxlength="40" onchange="txtChange()" onkeypress="" id="txtSearch" title="Search Product Here.." class="form-control  form-control-lg" placeholder="Enter Product Name &amp; Product ID" required/>
+                                            <input name="txtSearch" type="text" maxlength="40" onchange="txtChange()" onkeypress="" id="txtSearch" title="Search Product Here.." class="form-control  form-control-lg" placeholder="Enter Product Name &amp; Product ID"/>
                                             <span id="lb_Fake" style="display: none"></span>
                                         </div>
                                     </div>
@@ -652,17 +652,15 @@
         </div>
             <div class="popup" data-popup="popup-5">
                 <div class="popup-inner">
-                        <div>
                     <table class="table table-bordered gvDatatable" cellspacing="0" cellpadding="3" rules="all" id="retriveTable" style="background-color:White;border-color:#CCCCCC;border-width:1px;border-style:None;border-collapse:collapse;">
-                    <tbody>
-                    <tr style="color:White;background-color:#006699;font-weight:bold;">
-                            <th scope="col">Order ID</th><th scope="col">Total</th><th scope="col">Action</th>
-                    </tr>
-                </tbody>
-                </table>
+                        <tbody style="height:450px;display:block;overflow:scroll;">
+                            <tr style="color:White;background-color:#006699;font-weight:bold;">
+                                <th scope="col">Order ID</th><th scope="col">Total</th><th scope="col">Action</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a class="popup-close" data-popup-close="popup-5" href="#">x</a>
                 </div>
-                <a class="popup-close" data-popup-close="popup-5" href="#">x</a>
-                    </div>
             </div>
             <!-- Products Offers  Tables -->
             <div class="popup" data-popup="popup-3">
