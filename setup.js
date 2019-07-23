@@ -109,7 +109,7 @@ function offlineActivity(){
     loadProductFromDB();
 }
 function getData( ProductID ){
-    alert(" Get Data -: " + ProductID);
+   // alert(" Get Data -: " + ProductID);
     read("ProductImage" , ProductID , function(result){ 
         console.log(" ProductName is " + result.ProductName  + " Product ID " + result.productID );
         var y = ItemList = {
@@ -773,6 +773,7 @@ function doHold(){
     var table1 = document.getElementById("CartTable");
     var ddlCSV = document.getElementById('ddlCSV');
     var row = table1.rows;
+    var transactionID  = txtTransactionID.value;
     if(row.length == 1 ){
         SweetAlertInfo(" Sorry No Item Found... ");
         return;
@@ -804,7 +805,7 @@ function doHold(){
                     console.log("ProductID -:" + ProductID + " Qty " + Qty + "  Label Price " + LabelPrice + " Discount1 " + Discount1);
                     console.log("Discount2 " + Discount2 + "Selling Price " + SellingPrice + " Total Price " + TotalPrice + "Added On " + getTimeStamp());
                     //Add Data In the Sells Order Table Where IsDraft  Value is 1  
-                    InsertSellsOrderItem(txtTransactionID.text,ProductID,Dim , PromoRemark , Qty , LabelPrice , Discount1 , Discount2 , SellingPrice , TotalPrice , Remark , AddedBy , AddedOn , "104");
+                    InsertSellsOrderItem(transactionID,ProductID,Dim , PromoRemark , Qty , LabelPrice , Discount1 , Discount2 , SellingPrice , TotalPrice , Remark , AddedBy , AddedOn , "104");
                 }
                 console.log(" Sells Order Items Inserted... ");
                 var result = 1;
@@ -822,7 +823,7 @@ function doHold(){
                 var Status = 1;
                 var StoreID = 104;
                 var TerminalID = "000796";
-                InsertSellsOrder(txtTransactionID.value ,txtCustomerID.value,total , tax ,VoucherDiscount , totalDiscount , PaymentModeCharge , TotalPay , Remark1 , AddedBy1 , CustomerTransaction , Status , IsDraft , StoreID , TerminalID);
+                InsertSellsOrder(transactionID ,txtCustomerID.value,total , tax ,VoucherDiscount , totalDiscount , PaymentModeCharge , TotalPay , Remark1 , AddedBy1 , CustomerTransaction , Status , IsDraft , StoreID , TerminalID);
                 console.log(" Insert Sells Order Completed ");
                 if(result == 1){
                     //Pay button , Hold make Disable
@@ -1097,7 +1098,7 @@ function getCurrentTax(){
     }); 
 }
 function readSellOrder(){
-    
+
     console.log(" Reading the Sells Order");
     var tableRetrive = document.getElementById("retriveTable");
     console.log(" Length Of Retrive" + tableRetrive.rows.length);
@@ -1126,16 +1127,23 @@ function retrivalDelete(response){
     cur_row.parentNode.removeChild(cur_row);
 }
 function retrivalRertive(response){ 
+    //alert("Retrival is Going On ");
+
     console.log("---------Retrive--------------");
     var cur_row = response.parentNode.parentNode;
     var val = cur_row.cells[0].innerHTML;
-    SweetAlertWarning("Hold Value Retrive ..." + val );
-  //  read("SellsOrderItems" ,val , function(data){
-       // setDummyRow();
-   //    console.log("SellsOrderID " + data.SellsOrderID);
-  //     getData(data.ProductId);
-
-   // });
+  //  SweetAlertWarning("Hold Value Retrive ..." + val );
+ ///   console.log(" Read All the Data ... ");
+        readAll("SellsOrderItems" , function(data){
+   //      console.log("data is " + JSON.stringify(data));
+          if(data.SellsOrderId == val ){
+              //  console.log(" Added On " + data.AddedOn);
+              //  console.log(" Price " + data.Price);
+            //    alert(" Added On " + data.AddedOn  + " Price " + data.Price  + " Product ID " + data.ProductId);
+                getData(data.ProductId);
+                $('[data-popup="popup-5"]').fade(350);
+          }
+    })
     console.log("---------End Retrive--------------");
 }
 function deleteTableRow( tabelname , startIndex , endIndex ){

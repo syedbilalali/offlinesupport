@@ -31,7 +31,7 @@ request.onupgradeneeded = function(event) {
    var SellOrder = db.createObjectStore("SellsOrder", { keyPath : 'SellsOrderId'});
    //SellOrder.createIndex("");
    var SellsOrderItems = db.createObjectStore("SellsOrderItems" ,{ keyPath: "id", autoIncrement:true });
-   SellsOrderItems.createIndex("SellsOrderId", "SellsOrderId", { unique: false });
+   SellsOrderItems.createIndex("SellsOrderItems", "SellsOrderId", { unique: false });
    var SellTransactioin =db.createObjectStore("SellTransaction" , { keyPath : 'SellsOrderId'});
    var Promotion_Log =  db.createObjectStore("Promotion_Log" , { keyPath : 'Id'});
 }
@@ -56,6 +56,36 @@ function read(tablename , dataID , callback){
            callback("No");
         }
      };
+}
+function readKeyRange(tablename, callback, indexname , valuearray) {
+
+   console.log(" Inside Key Rnage Funtion ...");
+   var transaction = this.db.transaction(tablename);
+
+   console.log(" Transaction " + transaction);
+   var objectStore = transaction.objectStore(tablename);
+
+   console.log(" Object Store " + objectStore);
+   var index = objectStore.index(indexname);
+
+   console.log(" Index is " + index);
+   var request = index.openCursor(IDBKeyRange.only(valuearray));
+
+   console.log(" Request is " + request);
+   request.onerror = function(event){
+      alert(" Unable to retrive data fromn the database. ");
+   }
+   request.onsucess = function(event){
+      // 
+      console.log(" Data Come on Success ");
+      if(request.result){
+         console.log(" After Result ... ");
+         callback(request.result);
+      } else {
+         console.log(" Data is not found... ");
+         callback("No");
+      }
+   }
 }
 function readAll(tablename , callback) {
     var objectStore = this.db.transaction(tablename).objectStore(tablename);
