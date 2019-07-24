@@ -101,7 +101,7 @@
 
 /* Inner */
 .popup-inner {
-	max-width:327px;
+	max-width:350px;
 	padding:0px;
 	position:absolute;
 	top:50%;
@@ -175,6 +175,7 @@
     </script>
 </head>
 <body onload="" id="page-top" style="zoom:90%;">
+    <form method="post" action="javascript:void(0);" onsubmit="" id="form1">
     <form method="post" action="javascript:void(0);" onsubmit="" id="form1">
         <div id="UpdatePanel1">
             <input type="hidden" name="hfvalue" id="hfvalue" />
@@ -279,11 +280,11 @@
                                             <tr>
                                                 <td><b>TRANSACTION ID</b></td>
                                                 <td scope="row">
-                                                    <input name="txtTransactionIDShow" type="text" value=""  id="txtTransactionIDShow" class="form-control" placeholder="Transaction ID" />
+                                                    <input name="txtTransactionIDShow" type="text" value="" disabled="disabled" id="txtTransactionIDShow" class="form-control" placeholder="Transaction ID" />
                                                 </td>
                                                 <td><b>DATE</b></td>
                                                 <td>
-                                                    <input name="date" type="text" value="28-09-2019"  id="txtDate" class="form-control" placeholder="Current Date :" />
+                                                    <input name="date" type="text" disabled="disabled"  id="txtDate" class="form-control" placeholder="Current Date :" />
                                                 </td>
                                             </tr>
                                             <tr>
@@ -296,7 +297,7 @@
                                                 </td>
                                                 <td><b>CUSTOMER MOBILE NUMBER</b></td>
                                                 <td>
-                                                    <input name="txtCustomerID" type="text" maxlength="15" id="txtCustomerID" class="form-control" placeholder=" Enter Customer Mobile Number"  />
+                                                    <input name="txtCustomerID" type="text" disabled="disabled" maxlength="15" id="txtCustomerID" class="form-control" value="WALK IN CUSTOMER" placeholder=" Enter Customer Mobile Number"  />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -401,7 +402,6 @@
                                                     </td>
                                                     <td style="padding: 5px 10px; border-top: 1px solid #666; border-bottom: 1px solid #333; font-weight: bold; background: #333; color: #FFF;">
                                                         Total Paid :<a href="#" id="pshipping" tabindex="-1">
-
                                                         </a>
                                                         <span id="tship"></span>
                                                         <input type="image" name="imgOnBillTotal" id="imgOnBillTotal" src="../img/img/discount.png" data-popup-open="popup-3" style="height:19px;width:20px;" />
@@ -523,7 +523,7 @@
                                                     </b>
                                                 </td>
                                                 <td width="60%" class="p-0">
-                                                    <input name="txtCashAmount" type="text" readonly="readonly" onchange="" onkeypress="" id="txtCashAmount" class="form-control" />
+                                                    <input name="txtCashAmount" type="text"  onchange="" onkeypress="" id="txtCashAmount" class="form-control" />
                                                 </td>
                                             </tr>
                                             <tr class="p-0">
@@ -615,24 +615,24 @@
                         <table class="table table-responsive" style="background: white">
                                 <tr>
                                     <td>
-                                        <input type="submit" name="btn_1" value="410" onclick="" id="btn_1" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:127px;" />
+                                        <input type="submit" name="btn410" value="410" onclick="plusValue(this);"  id="btnCnt410" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:127px;" />
                                         <b>X</b>
                                         <span id="lblCount410">0</span>
                                     </td>
                                     <td>
-                                        <input type="submit" name="btn_2" value="420" onclick="" id="btn_2" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:40px;width:128px;margin-left: 0px" />
+                                        <input type="submit" name="btn420" value="420" onclick="plusValue(this);"  id="btnCnt420" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:40px;width:128px;margin-left: 0px" />
                                         <b>X</b>
                                         <span id="lblCount420">0</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="auto-style31">
-                                        <input type="submit" name="btn_3" value="450" onclick="plusValue(this);" id="btn_3" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:125px;" />
+                                        <input type="submit" name="btn450" value="450" onclick="plusValue(this);" id="btnCnt450" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:125px;" />
                                         <b>X</b>
                                         <span id="lblCount450">0</span>
                                     </td>
                                     <td>
-                                        <input type="submit" name="btn_4" value="500" onclick="" id="btn_4" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:41px;width:130px;" />
+                                        <input type="submit" name="btn500" value="500" onclick="plusValue(this);" id="btnCnt500" style="color:White;background-color:#3366FF;border-color:#0000CC;border-style:Solid;font-weight:bold;height:41px;width:130px;" />
                                         <b>X</b>
                                         <span id="lblCount500">0</span>
                                     </td>
@@ -646,7 +646,7 @@
                                     </td>
                                 </tr>
                             </table>                
-                     <a class="popup-close" data-popup-close="popup-1" href="#">x</a>
+                    <a class="popup-close" data-popup-close="popup-1" href="#">x</a>
                 </div>
             </div>
         </div>
@@ -668,15 +668,17 @@
                         <table cellspacing="2" cellpadding="3" rules="all" id="gvPromotionData" style="background-color:#DEBA84;border-color:#DEBA84;border-width:1px;border-style:None;height:243px;">
                             <tbody>
                                 <tr style="color:White;background-color:#A55129;font-weight:bold;height:30px;">
-                                    <th scope="col">ProductID</th><th scope="col">Discount</th>
+                                    <th scope="col">ProductID</th>
+                                    <th scope="col">Discount</th>
                                     <th scope="col">Promo Name</th>
                                     <th scope="col">Scheme Name</th>
                                     <th scope="col">GetType</th>
                                     <th scope="col">OnQty</th>
                                     <th scope="col">Apply Promo</th>
-                                    </tr><tr>
+                                </tr>
+                                <tr>
                                     <td colspan="7">
-                                        <label style="text-align: center; color: red;">No Discount Offer Found !!! </label>
+                                    <label style="text-align: center; color: red;">No Discount Offer Found !!! </label>
                                     </td>
                                 </tr>
                             </tbody>

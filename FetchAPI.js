@@ -78,12 +78,11 @@ function InsertSellsOrder(){
 }
 function insertSellOrderItemsAPI(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy ,  UpdatedBy , UpdatedOn , StoreID){
     $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/Insert_SellsOrderItems", {SellsOrderId : SellsOrderId  ,ProductId : ProductId , Dim:Dim  , PromoRemark : PromoRemark  , Qty: Qty  ,Price: Price , Discount1 : Discount1  ,  Discount2 : Discount2 , SellingPrice : SellingPrice , TotalPrice : TotalPrice ,  Remark : Remark,  AddedBy : AddedBy ,  UpdatedBy : UpdatedBy, UpdatedOn : UpdatedOn , StoreID : StoreID} , function(data, status){
-   //     console.log(data);
-       callback(data);
-   }).done(function(){ 
+      callback(data);
+   }).done(function(){
        console.info(" Successfully Insert Sells Order Items ");
       }).fail(function(){ 
-      console.warn("Error");       
+        console.warn(" Error ");      
    });
 }
 function InsertSellsOrderItems(){ 

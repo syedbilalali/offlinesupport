@@ -70,8 +70,7 @@ function init(){
         //Load Value Into Db From  API
         //Load Product Details 
             getProductImage1();
-            set(function(){
-
+            setTimeout(function(){
             } , 2000);
 
     });
@@ -88,7 +87,29 @@ function init(){
         },
         minLength: 1
     });
+    $( "#txtSearch" ).keypress(function( event ) {
+        if ( event.which == 13 ) {
+           event.preventDefault();
+           var value  = document.getElementById("txtSearch");
+           getData(value);
+        }
+    });
+    $("#ddlCSV").change(function(){
+        var selectedCountry = $(this).children("option:selected").val();
+        if(selectedCountry == "REGISTERED CUSTOMER"){
+         var txtCustomerID  =  document.getElementById("txtCustomerID");
+            txtCustomerID.disabled = false;
+            txtCustomerID.value= "";
+        } else {
+            var txtCustomerID  =  document.getElementById("txtCustomerID");
+            txtCustomerID.value= "WALK IN CUSTOMER";
+            txtCustomerID.disabled = true;
+        }
+    });
     window.txtTransactionID.text = uniqueNumber();
+    var txtDate = document.getElementById('txtDate');
+    var date = new Date();
+    txtDate.value = toJSONLocal(date);
     console.log(" Transaction ID " + window.txtTransactionID);
 }
 /************** End of the Page Initialisation ****************/
@@ -103,6 +124,7 @@ function onlineActivity(){
     });
     window.Products.length = 0;
     getProductImage1();
+    sendSellsOrderItemtoServer();
 }
 function offlineActivity(){ 
     console.log(" Now Net is Offline");
@@ -137,7 +159,7 @@ function getData( ProductID ){
 function deleteTableRows(){
     var table1 = document.getElementById("CartTable");
     var row = table1.rows;
-    for(var i=1; i<=table1.rows.length; i++){
+    for(var i=1; i<table1.rows.length; i++){
         document.getElementById("CartTable").deleteRow(i);
     }
 }
@@ -161,7 +183,7 @@ function setEmptyRow(){
 function showMsg(){
     SweetAlertInfo(" Transaction Canceled... ");
     clearAllFields();
-    deleteTableRows();
+ removeAllRow();
 }
 function setHeader(){
     var table1 = document.getElementById("CartTable");
@@ -770,6 +792,7 @@ function setInitialRow(){
  }
 function doHold(){
     //Holding the Value.
+    alert(" I am Hold ... ");
     var table1 = document.getElementById("CartTable");
     var ddlCSV = document.getElementById('ddlCSV');
     var row = table1.rows;
@@ -836,6 +859,7 @@ function doHold(){
                     btnHold.disabled = true;
                     console.log(" Sucesss ");
                     SweetAlertInfo(" Successfully Order On Hold !!! ");
+                    clearAllFields();
                 }   
             }else {
 
@@ -881,6 +905,7 @@ function uniqueNumber() {
 }
 uniqueNumber.previous = 0;
 function clearAllFields(){
+
     //Set Customer
     txtCashAmount.value = "0";
     txtTransactionID.value = uniqueNumber();
@@ -911,6 +936,7 @@ function clearAllFields(){
     txtDiscount.value = "0";
     txtTotalPay.value = "0";
     txtRefund.value = "0";
+    window.txtSearch.value  = "";
  }
  var total_tax = 0;
  var total_tax1=0;
@@ -963,11 +989,57 @@ function clearAllFields(){
      console.log("------------- End Fill Payments --------------------");
  }
  var num=0;
+ var count3 = 0;
+ var count1 = 0;
+var count2 = 0;
+var  count4 = 0;
  function plusValue(elem){
-   console.log(" Value is " + elem.value);
-   num =  elem.value;
-   var lblspan = document.getElementById('lblCount450');
-   lblspan.innerHTML = num ;
+
+    switch(elem.name){
+        case "btn410":
+             
+                console.log("Click" + count);
+                var lblspan = document.getElementById('lblCount410');
+                var button = document.getElementById(elem.id);
+                button.onclick = function(){
+                    count1 += 1;
+                    lblspan.innerHTML = count1;
+                }
+            break;
+        case "btn420":
+          
+            console.log("Click" + count);
+            var lblspan = document.getElementById('lblCount420');
+            var button = document.getElementById(elem.id);
+            button.onclick = function(){
+            
+                count2 += 1;
+                lblspan.innerHTML = count2;
+            }
+            break;
+        case "btn450":
+               
+                console.log("Click" + count);
+                var lblspan = document.getElementById('lblCount450');
+                var button = document.getElementById(elem.id);
+                button.onclick = function(){
+                
+                count3 += 1;
+                lblspan.innerHTML = count3;
+            }
+            break;
+        case "btn500": 
+         
+            console.log("Click" + count);
+            var lblspan = document.getElementById('lblCount500');
+            var button = document.getElementById(elem.id);
+            button.onclick = function(){
+            
+                count4 += 1;
+                lblspan.innerHTML = count4;
+            }
+            break;
+    }
  }
  function OnPay(){
      console.log("-----------Payment Section--------------");
@@ -1056,6 +1128,9 @@ function clearAllFields(){
  }
  function chngCashManually(){
      document.getElementById('Chk_Cash').checked = true;
+     $('[data-popup="popup-1"]').fadeOut(350);
+     document.getElementById("txtCashAmount").focus();
+     document.getElementById("txtCashAmount").select();
  }
  function chngCashSet(){
      document.getElementById('Chk_Cash').checked = false;
@@ -1098,7 +1173,6 @@ function getCurrentTax(){
     }); 
 }
 function readSellOrder(){
-
     console.log(" Reading the Sells Order");
     var tableRetrive = document.getElementById("retriveTable");
     console.log(" Length Of Retrive" + tableRetrive.rows.length);
@@ -1137,9 +1211,6 @@ function retrivalRertive(response){
         readAll("SellsOrderItems" , function(data){
    //      console.log("data is " + JSON.stringify(data));
           if(data.SellsOrderId == val ){
-              //  console.log(" Added On " + data.AddedOn);
-              //  console.log(" Price " + data.Price);
-            //    alert(" Added On " + data.AddedOn  + " Price " + data.Price  + " Product ID " + data.ProductId);
                 getData(data.ProductId);
                 $('[data-popup="popup-5"]').fade(350);
           }
@@ -1351,6 +1422,12 @@ function checkProdOffer(productID , callback){
         }
     })
 }
+function sendSellsOrderItemtoServer(){
+    readAll("SellsOrderItems" , function(response){
+           console.log(" SellsOrderItems" +  JSON.stringify(response));
+    //      insertSellOrderItemsAPI(response.SellsOrderId ,response.ProductId , response.Dim , response.PromoRemark , response.Qty , response.Price , response.Discount1 , response.Discount2 , response.SellingPrice , response.TotalPrice ,response.Remark , response.AddedBy , response.UpdatedBy , response.UpdatedOn , response.StoreID);
+    });
+}
 /******************* End of DB Operation ***********************/
 
 /******************* Alert and Full Screen ********************/
@@ -1430,7 +1507,6 @@ console.log(" Window Load Event Listener Start");
 window.addEventListener('load', function() {
 
 function updateOnlineStatus(event) {
-
     var condition = navigator.onLine ? "online" : "offline";
     var div = document.getElementById("offChng");
     if(condition == "online"){
@@ -1477,6 +1553,11 @@ function setHeader(){
     cell9.innerHTML = "Selling Price";
     cell10.innerHTML = "Total";
     cell11.innerHTML = "Action";
+}
+function toJSONLocal (date) {
+	var local = new Date(date);
+	local.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+	return local.toJSON().slice(0, 10);
 }
 function setNewRow(Products){
     //Delete Empty Row in the
