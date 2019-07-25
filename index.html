@@ -519,11 +519,11 @@
                                             <tr class="p-0">
                                                 <td width="40%" class="p-0">
                                                     <b>
-                                                        <input id="Chk_Cash" data-popup-open="popup-1" type="checkbox" name="Chk_Cash" onclick="" />&nbsp;Cash
+                                                        <input id="Chk_Cash" type="checkbox" name="Chk_Cash" onclick="checkBoxClick();" />&nbsp;Cash
                                                     </b>
                                                 </td>
                                                 <td width="60%" class="p-0">
-                                                    <input name="txtCashAmount" type="text"  onchange="" onkeypress="" id="txtCashAmount" class="form-control" />
+                                                    <input name="txtCashAmount" type="text"  onchange="setCashTrans();" id="txtCashAmount" class="form-control" />
                                                 </td>
                                             </tr>
                                             <tr class="p-0">
@@ -637,6 +637,11 @@
                                         <span id="lblCount500">0</span>
                                     </td>
                                 </tr>
+                                <tr >
+                                    <td class="auto-style31" colspan="2" align="center">
+                                        <span id="lblCashCount"  style=" font-size:large;">0</span>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>
                                         <input type="submit" name="btn_Manual" value="Manual" onclick="chngCashManually()" id="btn_Manual" style="color:White;background-color:#CC3300;border-color:#0000CC;border-style:Solid;font-weight:bold;height:42px;width:100%;" />
@@ -696,7 +701,6 @@
                                  </tr>
                         </thead>
                         <tbody>
-                          
                         </tbody>
                      </table>
                     <a class="popup-close" data-popup-close="popup-4" href="#">x</a>
@@ -722,9 +726,9 @@
                                         <b>AFLAK Electronics Industries Co. Ltd</b><br />
                                         <b>Tax ID:</b>
                                         <span id="lblNPWP"></span><br />
-                                        <b>MARVIL STORE </b>
+                                        <b> MARVIL STORE </b>
                                         <br />
-                                        <b>WWW.marvil.co.in</b><br />
+                                        <b> WWW.marvil.co.in </b><br />
                                         <b>Tlp:</b><span id="lblTlp"></span><br />
                                     </div>
                                 </div>

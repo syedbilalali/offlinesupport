@@ -72,6 +72,8 @@ function init(){
             getProductImage1();
             setTimeout(function(){
             } , 2000);
+            FetchOnBillTotalPromo();
+            FetchOnProductPromo();
 
     });
     $("#txtSearch").autocomplete({ 
@@ -253,7 +255,6 @@ function setDummyRow(ItemList , discOffer){
             console.log(" %c Row " , "color:BLUE;");
             console.log(" Value is " + table1.rows[i].cells[1].innerHTML);
             if(table1.rows[i].cells[1].innerHTML == ItemList.ItemCode){
-                alert(" Change in the Quantity .... ");
                 var str = table1.rows[i].cells[4].innerHTML;
                 var sellingPrice  = table1.rows[i].cells[8].innerHTML;
                 var getQty  = table1.rows[i].cells[4].getElementsByTagName("input")[0].value;
@@ -279,8 +280,6 @@ function setDummyRow(ItemList , discOffer){
         }
     }
     if(addprodflag == 1){
-
-
         var row = table1.insertRow(table1.rows.length);
         row.style.backgroundColor = "#F7F3F6";
         row.style.color = "#333333";
@@ -666,6 +665,7 @@ function removeRow(item){
         updateRow();
         if(row.length==1){
             setEmptyRow();
+            clearAllFields();
         }
     }
     fillPayment();
@@ -732,6 +732,7 @@ function getRow(index){
 /**************** Main Program Operation *******************/
 var x;
 $(document).ready(function(){
+
      console.log(" Main Is Running.... ");
      init(); 
      clearAllFields();
@@ -790,15 +791,24 @@ function setInitialRow(){
     var n = d.toISOString();
     return  n.replace("Z"," ").replace("T"," "); 
  }
+ function isProductInList(){
+    var table1 = document.getElementById("CartTable");
+    if(table1.rows.length > 1){
+        console.log();
+        if(table1.rows[1].cells[0].innerHTML == "No Products Added.."){
+            return false;
+        }
+    }
+    return true;
+ }
 function doHold(){
     //Holding the Value.
-    alert(" I am Hold ... ");
     var table1 = document.getElementById("CartTable");
     var ddlCSV = document.getElementById('ddlCSV');
     var row = table1.rows;
     var transactionID  = txtTransactionID.value;
-    if(row.length == 1 ){
-        SweetAlertInfo(" Sorry No Item Found... ");
+    if(!isProductInList()){
+        SweetAlertInfo(" No Product to Hold !!! ");
         return;
     }
     if((ddlCSV.selectedIndex  > 0) || (ddlCSV.selectedIndex == 0) ){
@@ -890,6 +900,7 @@ function removeAllRow(){
     var table1 = document.getElementById("CartTable");
     for(var j = table1.rows.length - 1; j>0; j--){
         table1.deleteRow(j);
+
     }
     setEmptyRow();
 }
@@ -941,24 +952,21 @@ function clearAllFields(){
  var total_tax = 0;
  var total_tax1=0;
  function fillPayment() {
-     /** 
-      * lblTotalAmount , lblTaxFee ,  lblCashAmt ,  lblVoucherAmmount,  lblTotalDiscount,  lblCreditCard,  lblDebitCard
-      * lblTotalTax, lblTotalPayment
-     **/
+
      console.log("-------------Fill Payments --------------------");
      window.lastDiscount;
+     console.log(" Last Discount " + window.lastDiscount );
      var lasttotal , totaltax = 0  , lastDiscount = 0 ;
      lasttotal = 0.00;
-     totaltax=0.00;
-     totalDiscount = 0.00;
      window.lasttotal = parseFloat(lblTotalAmount.innerHTML,10);
      console.log(" Last Total Ammount : " + window.lasttotal);
      window.lastDiscount  = parseFloat(lblTotalDiscount.innerHTML,10);
+
      console.log(" Last Total Ammount : " + window.lastDiscount);
      console.log(" Last Tax Details : " + total_tax1);
      console.log(" Current Tax Value " + window.CurrentTax );
-     
-    // window.total_tax = parseFloat(lblTotalTax.innerHTML);
+     window.total_tax = parseFloat(lblTotalTax.innerHTML);
+
      var totalItems  = 0;
      var table1 = document.getElementById("CartTable");
      var length  = table1.rows.length;
@@ -967,81 +975,150 @@ function clearAllFields(){
 
          console.log("--- FOR ------");
          var totalPrice  =  table1.rows[i].cells[9].innerHTML;
-         console.log(" Total Price " + totalPrice);
          var price = table1.rows[i].cells[5].innerHTML;
-         console.log(" Price " + price); 
          var qty = table1.rows[i].cells[4].getElementsByTagName("input")[0].value;
-         console.log(" Quantity " + qty);
+
          total_tax = calculateTax(false,price , window.lastDiscount ,qty , window.CurrentTax);
-         console.log(" Current  Tax  " + total_tax);
          total_tax1 += total_tax;
-         console.log(" Now Tax is " + total_tax1);
+
          lasttotal = parseFloat(totalPrice, 10) + lasttotal;
-         console.log(" Last Total " + lasttotal);
          var addSum = lasttotal;
+         txtTotal.value = addSum.toFixed(2); 
          lblTotalAmount.innerHTML  = addSum.toFixed(2);
-         console.log(" Grand Sum : " + addSum );
          lblTotalTax.innerHTML = total_tax1.toFixed(2);
-        // console.log(" Grand Tax " + tot);
+
+         console.log(" Total Price " + totalPrice);
+         console.log(" Price " + price); 
+         console.log(" Quantity " + qty);
+         console.log(" Current  Tax  " + total_tax);
+         console.log(" Now Tax is " + total_tax1);
+         console.log(" Last Total " + lasttotal);
+         console.log(" Grand Sum : " + addSum );
      }
+     var cashCheck  = document.getElementById("Chk_Cash"); 
+     if(cashCheck.checked == true){
+            alert(" Transaction By Cash ");
+        }
      console.log(" Items Is " + i);
      lblItems.value = i;
      console.log("------------- End Fill Payments --------------------");
  }
+ function checkBoxClick(){
+     //Check for Product in the Cart.
+     var checkbox = document.getElementById("Chk_Cash");
+     if(checkbox.checked == true){ 
+         alert(" Check Box is true.... ");
+        var table1 = document.getElementById("CartTable");
+
+    if(table1.rows.length > 1){
+        console.log("Value is -: " + table1.rows[1].cells[0].innerHTML);
+        if(table1.rows[1].cells[0].innerHTML != "No Products Added.."){
+            console.log("%c Product is Found.... ", "color:BLUE;");
+            var lblspan1 = document.getElementById('lblCount410');
+            lblspan1.innerHTML = "0";
+            var lblspan2 = document.getElementById('lblCount420');
+            lblspan2.innerHTML = "0";
+            var lblspan3 = document.getElementById('lblCount450');
+            lblspan3.innerHTML = "0";
+            var lblspan4 = doc
+             count3 = 0;ument.getElementById('lblCount500');
+            lblspan4.innerHTML = "0";
+             count1 = 0;
+             count2 = 0;
+             count4 = 0; 
+             total = 0;
+             var lblCashCount  = document.getElementById("lblCashCount");
+             lblCashCount.innerHTML = 0;
+            $('[data-popup="popup-1"]').fadeIn(350);
+
+        }else {
+             SweetAlertInfo(" Please add some product Items !!!");
+             document.getElementById("Chk_Cash").checked  = false;
+        }
+    } else {
+        console.log(" Product is Not found ... ");
+    }
+    }else {
+    }
+    fillPayment();
+ }
  var num=0;
  var count3 = 0;
  var count1 = 0;
-var count2 = 0;
-var  count4 = 0;
+ var count2 = 0;
+ var count4 = 0;
+ var sum = 0;
+ var total =0;
  function plusValue(elem){
-
+    var lblCashCount  = document.getElementById("lblCashCount");
     switch(elem.name){
-        case "btn410":
-             
+        case "btn410":     
                 console.log("Click" + count);
                 var lblspan = document.getElementById('lblCount410');
                 var button = document.getElementById(elem.id);
                 button.onclick = function(){
                     count1 += 1;
+                    var value = parseFloat(button.value);
+                   console.log("Counter is " + count1 + " Value " + value  );
+                    sum = (parseInt(count1) * value);
+                    total += sum;
+                    console.log("Value is " +   sum  );
                     lblspan.innerHTML = count1;
+                    lblCashCount.innerHTML = total;
                 }
             break;
         case "btn420":
-          
-            console.log("Click" + count);
-            var lblspan = document.getElementById('lblCount420');
-            var button = document.getElementById(elem.id);
-            button.onclick = function(){
-            
-                count2 += 1;
-                lblspan.innerHTML = count2;
-            }
+                console.log("Click" + count);
+                var lblspan = document.getElementById('lblCount420');
+                var button = document.getElementById(elem.id);
+                button.onclick = function(){
+                    count2 += 1;
+                    var value = parseFloat(button.value);
+                    console.log("Counter is " + count1 + " Value " + value  );
+                    sum = parseInt(count2) * value;
+                    total += sum;
+                    lblspan.innerHTML = count2;
+                    lblCashCount.innerHTML = total;
+                }
             break;
         case "btn450":
-               
                 console.log("Click" + count);
                 var lblspan = document.getElementById('lblCount450');
                 var button = document.getElementById(elem.id);
                 button.onclick = function(){
-                
-                count3 += 1;
-                lblspan.innerHTML = count3;
-            }
+                    count3 += 1;
+                    var value = parseFloat(button.value);
+                    console.log("Counter is " + count1 + " Value " + value  );
+                  
+                    sum = parseInt(count3) * value;
+                    total += sum;
+                    lblspan.innerHTML = count3;
+                    lblCashCount.innerHTML = total;
+                }
             break;
         case "btn500": 
-         
-            console.log("Click" + count);
-            var lblspan = document.getElementById('lblCount500');
-            var button = document.getElementById(elem.id);
-            button.onclick = function(){
-            
-                count4 += 1;
-                lblspan.innerHTML = count4;
-            }
+                console.log("Click" + count);
+                var lblspan = document.getElementById('lblCount500');
+                var button = document.getElementById(elem.id);
+                button.onclick = function(){
+                    count4 += 1;
+                    var value = parseFloat(button.value);
+                    console.log("Counter is " + count1 + " Value " + value  );
+                    sum = parseInt(count4) * value;
+                    total += sum;
+                    lblspan.innerHTML = count4;
+                    lblCashCount.innerHTML = total;
+                }
             break;
     }
  }
+ function setCashTrans(){
+
+     alert(" Current Cash Chnages");
+     lblCashAmt.value  = totol;
+ }
  function OnPay(){
+
      console.log("-----------Payment Section--------------");
      var total = 0;
      var totaltax = 0;
@@ -1127,13 +1204,18 @@ var  count4 = 0;
      $('txtSearch').value  = "";
  }
  function chngCashManually(){
-     document.getElementById('Chk_Cash').checked = true;
+     
+    document.getElementById('Chk_Cash').checked = true;
      $('[data-popup="popup-1"]').fadeOut(350);
      document.getElementById("txtCashAmount").focus();
      document.getElementById("txtCashAmount").select();
  }
  function chngCashSet(){
-     document.getElementById('Chk_Cash').checked = false;
+
+     document.getElementById('Chk_Cash').checked = true;
+     $('[data-popup="popup-1"]').fadeOut(350);
+     document.getElementById("txtCashAmount").value = total;
+     document.getElementById("txtCashAmount").focus();
  }
 /*************** End of Page Functionality ****************/
 
@@ -1194,28 +1276,25 @@ function readSellOrder(){
     });  
 }
 function retrivalDelete(response){
-
     var cur_row = response.parentNode.parentNode;
     var val = cur_row.cells[0].innerHTML;
     SweetAlertInfo(" Hold Value Deleted ... " + val);
     cur_row.parentNode.removeChild(cur_row);
 }
 function retrivalRertive(response){ 
-    //alert("Retrival is Going On ");
-
     console.log("---------Retrive--------------");
     var cur_row = response.parentNode.parentNode;
     var val = cur_row.cells[0].innerHTML;
-  //  SweetAlertWarning("Hold Value Retrive ..." + val );
- ///   console.log(" Read All the Data ... ");
         readAll("SellsOrderItems" , function(data){
-   //      console.log("data is " + JSON.stringify(data));
           if(data.SellsOrderId == val ){
                 getData(data.ProductId);
                 $('[data-popup="popup-5"]').fade(350);
           }
     })
     console.log("---------End Retrive--------------");
+}
+function setCashTrans(){
+    alert(" Hello World... ");
 }
 function deleteTableRow( tabelname , startIndex , endIndex ){
     var table1 = document.getElementById(tabelname);
@@ -1427,6 +1506,24 @@ function sendSellsOrderItemtoServer(){
            console.log(" SellsOrderItems" +  JSON.stringify(response));
     //      insertSellOrderItemsAPI(response.SellsOrderId ,response.ProductId , response.Dim , response.PromoRemark , response.Qty , response.Price , response.Discount1 , response.Discount2 , response.SellingPrice , response.TotalPrice ,response.Remark , response.AddedBy , response.UpdatedBy , response.UpdatedOn , response.StoreID);
     });
+}
+function deleteSellsOrder(SellsOrderId){
+    remove1("SellsOrderItems" , SellsOrderId , function(response){
+        if(response == "Success"){
+            SweetAlertSuccess(" Successfully Deleted !!! ");
+        }else {
+            console.log(" Something went wrong... ");
+        }
+    })
+}
+function deleteSellsOrderItems(SellsOrderId){
+    remove1("SellsOrder" , SellsOrderId , function(response){
+        if(response == "Success"){
+            SweetAlertSuccess(" Successfully Deleted !!! ");
+        }else {
+            console.log(" Something went wrong... ");
+        }
+    })  
 }
 /******************* End of DB Operation ***********************/
 
