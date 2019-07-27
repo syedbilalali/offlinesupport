@@ -89,11 +89,11 @@ function init(){
         },
         minLength: 1
     });
-    $( "#txtSearch" ).keypress(function( event ) {
-        if ( event.which == 13 ) {
-           event.preventDefault();
-           var value  = document.getElementById("txtSearch");
-           getData(value);
+    $("#txtSearch").keyup(function(event) {
+        if (event.keyCode === 13) {
+            $("#txtSearch").click();
+            alert("Value is Submitted.. ");
+            getData(txtSearch.value); 
         }
     });
     $("#ddlCSV").change(function(){
@@ -151,7 +151,8 @@ function getData( ProductID ){
         }
         setProductInfo(y);
         checkProdOffer(y.ItemCode , function(flag){ 
-            console.log("Is ProdUct Offer Avail -:"  + flag);
+            console.log("Is ProdUct Offer Avail -:"  + flag); 
+            console.log(" Avail Qty " + y.Quantity  + " Putting Qty " + y.PurQty);
             setDummyRow(y , flag);
             updateRow();
             fillPayment();
@@ -252,27 +253,39 @@ function setDummyRow(ItemList , discOffer){
     if(table1.rows.length > 1) {
         alert("One More Element Is Added");
         for(var i=1; i<table1.rows.length; i++){
+
             console.log(" %c Row " , "color:BLUE;");
             console.log(" Value is " + table1.rows[i].cells[1].innerHTML);
+
             if(table1.rows[i].cells[1].innerHTML == ItemList.ItemCode){
+
                 var str = table1.rows[i].cells[4].innerHTML;
                 var sellingPrice  = table1.rows[i].cells[8].innerHTML;
                 var getQty  = table1.rows[i].cells[4].getElementsByTagName("input")[0].value;
+                var current_Qty = (parseInt(getQty ) + parseInt(1));
                 console.log(" Current input Html -: " + str);
-                var current_Qty = (parseInt(getQty )+ parseInt(1));
-                console.log(" Current P Qty -: " + current_Qty);
+
+                if(current_Qty <= ItemList.Quantity ){
+                    
+                    console.log(" Current P Qty -: " + current_Qty);
                 var res1 = 'value="' + current_Qty  + '"';
                 var rep1 = 'value="'+ getQty +'"';
                 var replace = str.replace(rep1, res1);
                 console.log(" Current input Html -: " + replace);
+
                 table1.rows[i].cells[4].innerHTML = replace;
                 addprodflag = 0;
                 console.log(" Prod Flag Value -: " + addprodflag);
-                alert(" Selling Price " +  sellingPrice);
+           //     alert(" Selling Price " +  sellingPrice);
+                
                 var cur_selling_price = parseFloat(current_Qty) * parseFloat(sellingPrice);
                 table1.rows[i].cells[9].innerHTML =  cur_selling_price.toFixed(2);
+                } else {
+                    SweetAlertInfo(" Purchase Quantity can't added more. ");
+                }     
                 return;
-            }else{
+
+            } else {
 
                addprodflag = 1;
                console.log(" Prod Flag Value -: " + addprodflag);
@@ -943,64 +956,53 @@ function clearAllFields(){
     lblTotalTax.innerHTML = "0.00";
     lblCurrentTaxVal.innerHTML = "0.00";
     //side Pay Panel
-    txtTotal.value = "0";
-    txtDiscount.value = "0";
-    txtTotalPay.value = "0";
-    txtRefund.value = "0";
+    txtTotal.value = "0.00";
+    txtDiscount.value = "0.00";
+    txtTotalPay.value = "0.00";
+    txtRefund.value = "0.00";
     window.txtSearch.value  = "";
  }
  var total_tax = 0;
  var total_tax1=0;
- function fillPayment() {
+ function  fillPayment() {
 
      console.log("-------------Fill Payments --------------------");
-     window.lastDiscount;
-     console.log(" Last Discount " + window.lastDiscount );
-     var lasttotal , totaltax = 0  , lastDiscount = 0 ;
-     lasttotal = 0.00;
-     window.lasttotal = parseFloat(lblTotalAmount.innerHTML,10);
-     console.log(" Last Total Ammount : " + window.lasttotal);
-     window.lastDiscount  = parseFloat(lblTotalDiscount.innerHTML,10);
-
-     console.log(" Last Total Ammount : " + window.lastDiscount);
-     console.log(" Last Tax Details : " + total_tax1);
-     console.log(" Current Tax Value " + window.CurrentTax );
-     window.total_tax = parseFloat(lblTotalTax.innerHTML);
-
+         
      var totalItems  = 0;
+     var lasttotal = 0.00 , totaltax = 0.00  , lastDiscount = 0.00 , lasttax=0.00;
      var table1 = document.getElementById("CartTable");
      var length  = table1.rows.length;
+
      //Iterate Table Rows 
+     console.log("----------- FOR LOOP START  --------------------");
      for(var i=1; i<length; i++){
 
-         console.log("--- FOR ------");
          var totalPrice  =  table1.rows[i].cells[9].innerHTML;
          var price = table1.rows[i].cells[5].innerHTML;
          var qty = table1.rows[i].cells[4].getElementsByTagName("input")[0].value;
 
-         total_tax = calculateTax(false,price , window.lastDiscount ,qty , window.CurrentTax);
-         total_tax1 += total_tax;
-
          lasttotal = parseFloat(totalPrice, 10) + lasttotal;
-         var addSum = lasttotal;
-         txtTotal.value = addSum.toFixed(2); 
+         lasttax = calculateTax(false,totalPrice , window.lastDiscount ,qty , window.CurrentTax) + lasttax ;
+
+         var addSum = lasttotal + lasttax;
+         var tax = lasttax;
+
+         //Display to screen
+         txtTotal.value = lasttotal.toFixed(2);
+         lblTotalTax.innerHTML = tax.toFixed(2); 
+         txtTotalPay.value = addSum.toFixed(2);
          lblTotalAmount.innerHTML  = addSum.toFixed(2);
-         lblTotalTax.innerHTML = total_tax1.toFixed(2);
 
          console.log(" Total Price " + totalPrice);
          console.log(" Price " + price); 
          console.log(" Quantity " + qty);
-         console.log(" Current  Tax  " + total_tax);
-         console.log(" Now Tax is " + total_tax1);
          console.log(" Last Total " + lasttotal);
          console.log(" Grand Sum : " + addSum );
+         console.log(" Items Is " + i);
      }
-     var cashCheck  = document.getElementById("Chk_Cash"); 
-     if(cashCheck.checked == true){
-            alert(" Transaction By Cash ");
-        }
-     console.log(" Items Is " + i);
-     lblItems.value = i;
+     console.log(" __________ END OF FOR LOOP _______________")
+     console.log(" Items Is " + table1.rows.length - 1);
+     document.getElementById("lblItems").innerHTML = + table1.rows.length - 1;
      console.log("------------- End Fill Payments --------------------");
  }
  function checkBoxClick(){
@@ -1030,7 +1032,6 @@ function clearAllFields(){
              var lblCashCount  = document.getElementById("lblCashCount");
              lblCashCount.innerHTML = 0;
             $('[data-popup="popup-1"]').fadeIn(350);
-
         }else {
              SweetAlertInfo(" Please add some product Items !!!");
              document.getElementById("Chk_Cash").checked  = false;
@@ -1243,7 +1244,7 @@ function FetchBillOffersFromOnline(){
         for(var i=0; i<offers.length; i++){
           billOffers[i] = { ID : data[i].ID, FriendlyName : data[i].FriendlyName , PromoCode : data[i].PromoCode , PromoType :data[i].PromoType , DiscountType : data[i].DiscountType , Discount : data[i].Discount , AddedOn : data[i].AddedOn , ExpiredOn: data[i].ExpiredOn , IsActive : data[i.IsActive] , MaxValue : data[i].MaxValue , MinTrans : data[i].MinTrans , PerUserApplied : data[i].PerUserApplied , IsAllProducts : data[i].IsAllProducts , IsTotalPurchasePromo : data[i].IsTotalPurchasePromo , PromoCategory : data[i].PromoCategory , SpecialPrice : data[i].SpecialPrice , RelevantID : data[i].RelevantID , Discount2 : data[i].Discount2  , IsProductFree : data[i].IsProductFree }; 
           console.log(" Value is " + JSON.stringify(billOffers[i]));
-          add(window.db , "BillOffers", billOffers[i]);  
+          add(window.indexedDB , "BillOffers", billOffers[i]);  
         }
     });
 }
@@ -1355,7 +1356,7 @@ function SaveProductImage(StoreID ){
         };
         Products[i] = { productID : data[i].productID , ProductName : data[i].ProductName };
         //Add to DB
-        add(window.db,"ProductImage", productImage[i]);
+        add(window.indexedDB,"ProductImage", productImage[i]);
     }
     });
 }
@@ -1397,7 +1398,7 @@ function BillPromo(){
                    Discount2:data1[i].Discount2,
                    IsProductFree:data1[i].IsProductFree, 
                };
-               add(window.db ,"BillOffers", ProdofferImage[i]);
+               add(window.indexedDB ,"BillOffers", ProdofferImage[i]);
            }
    });
 }
@@ -1427,7 +1428,7 @@ function ProductPromoData(){
                 OnQty : data1[i].OnQty,
                 AddingPrice : data1[i].AddingPrice
             };
-            add(window.db , "ProdOffers" , productPromo[i]);
+            add(window.indexedDB , "ProdOffers" , productPromo[i]);
         }
     });
 }
@@ -1449,7 +1450,7 @@ function InsertSellsOrderItem(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty
        AddedOn : AddedOn , 
        StoreID : StoreID 
    };
-    add(window.db , "SellsOrderItems"  , SellsOrderItems[0]);
+    add(window.indexedDB , "SellsOrderItems"  , SellsOrderItems[0]);
 }
 function updateSellsOrderItems(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy ,  UpdatedBy , UpdatedOn , StoreID){
 }
@@ -1473,7 +1474,29 @@ function InsertSellsOrder(SellsOrderId,  CustomerId, Total,  Tax,  VoucherDiscou
         StoreID : StoreID  ,  
         TerminalID : TerminalID
     };
-    add(window.db , "SellsOrder", SellsOrder[0]);
+    add(window.indexedDB , "SellsOrder", SellsOrder[0]);
+}
+function getImageFromServer(URIAddress ,  filename){
+    var xhr = new XMLHttpRequest(),blob;
+    // Create XHR
+    xhr.open("GET",URIAddress + filename, true);
+    // Set the responseType to blob
+    xhr.responseType = "blob";
+    var  np = new Promise(function(resolve ,   reject){
+        xhr.addEventListener("load", function () {
+            if (xhr.status === 200) {
+                console.log("Image retrieved");                
+                // Blob as response
+                blob = xhr.response;
+                console.log("Blob:" + blob);
+                resolve(blob);
+            }else{
+                reject(xhr.status);
+            }
+        }, false);
+    });
+    xhr.send();
+    return np;
 }
 // Product Details FROM API TO DB
 function getProductImage1(){ 
@@ -1481,16 +1504,29 @@ function getProductImage1(){
         var obj = getProductImage(104 , function(data){ 
         var data =  JSON.parse(data);
         for(var i=0 ; i<data.length; i++){
-            productImage[i] = { SellsOrderItemID : data[i].SellsOrderItemID , productID : data[i].productID , ProductName : data[i].ProductName ,unitOfMeasurement : data[i].unitOfMeasurement,
-                Qty : data[i].Qty , Price : data[i].Price  , image : data[i].image , size : data[i].size , Discount : data[i].Discount  , MaxValue : data[i].MaxValue , Quantity : data[i].Quantity , 
-                IsReturn: data[i].IsReturn, IsDraft: data[i].IsDraft, IsQtyTxtOn: data[i].IsQtyTxtOn , IsDiscImgOn  : data[i].IsDiscImgOn  
-            };
-            Products[i] = { productID : data[i].productID , ProductName : data[i].ProductName };
-            add(window.db,"ProductImage", productImage[i]);
+
+            getImageFromServer("img/prodImages/" , data[i].image ).then(function(data){ 
+                console.log("Image Data Inside Promise ");
+                console.log(data);  
+                productImage[i] = { SellsOrderItemID : data[i].SellsOrderItemID , productID : data[i].productID , ProductName : data[i].ProductName ,unitOfMeasurement : data[i].unitOfMeasurement,
+                    Qty : data[i].Qty , Price : data[i].Price  , image : data[i].image , size : data[i].size , Discount : data[i].Discount  , MaxValue : data[i].MaxValue , Quantity : data[i].Quantity , 
+                    IsReturn: data[i].IsReturn, IsDraft: data[i].IsDraft, IsQtyTxtOn: data[i].IsQtyTxtOn , IsDiscImgOn  : data[i].IsDiscImgOn 
+                };
+                Products[i] = { productID : data[i].productID , ProductName : data[i].ProductName };
+                add(window.indexedDB,"ProductImage", productImage[i]);
+                addImage("ProductPics",data[i].image ,data).then( function(event){ 
+                    console.log(" Successfully Save Images");
+                } , function(event){
+                    console.log(" Something went wrong !!!");
+                });;
+             } , 
+             function(status){ console.log(" Status " + status) });
+          
         }
      });
 }
 function checkProdOffer(productID , callback){
+
     console.log(" Product Offer ID " +  productID);
     read("ProdOffers" , productID , function(data){
        console.log(" Data Is Avail " +  JSON.stringify(data));

@@ -5,9 +5,11 @@
  * 
  */
 console.log(" Initialisation of FetchAPI ");
+var base_url1 ="http://localhost:50526/";
+var base_url2 = "http://ec2-13-126-49-10.ap-south-1.compute.amazonaws.com/"; 
 //Get Product Images...
 function getProductImage(StoreID ,fn){   
-   $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/ProductImage1", {storeID:StoreID} , function(data, status){
+   $.get(base_url1 + "New_Terminal/POSTerminal.asmx/ProductImage1", {storeID:StoreID} , function(data, status){
         obj = data ;
        //Insert the Data Into IndexDB 
        fn(data);
@@ -20,7 +22,7 @@ function getProductImage(StoreID ,fn){
    });
 }
 function getProductImage2(StoreID ,fn){   
-    $.get("http://ec2-13-126-49-10.ap-south-1.compute.amazonaws.com/New_Terminal/POSTerminal.asmx/ProductImage1", {storeID:StoreID} , function(data, status){
+    $.get( base_url2 + "New_Terminal/POSTerminal.asmx/ProductImage1", {storeID:StoreID} , function(data, status){
          obj = data ;
         //Insert the Data Into IndexDB 
         fn(data);
@@ -33,7 +35,7 @@ function getProductImage2(StoreID ,fn){
     });
  }
 function getCurrentTaxValue(callback){
-    $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/getTaxDetails", [], function(data, status){
+    $.get(base_url1 + "New_Terminal/POSTerminal.asmx/getTaxDetails", [], function(data, status){
          var jobj = JSON.parse(data);
          callback(jobj);
         //save IndexedDB 
@@ -44,7 +46,7 @@ function getCurrentTaxValue(callback){
    });
 }
 function IsTotalOfferFound(StoreID , callback){
-    $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/IsTotalOfferFound", {storeID:StoreID} , function(data, status){
+    $.get(base_url1 + "New_Terminal/POSTerminal.asmx/IsTotalOfferFound", {storeID:StoreID} , function(data, status){
          console.log(data);
          var jobj = JSON.parse(data);
         callback(jobj);
@@ -55,7 +57,7 @@ function IsTotalOfferFound(StoreID , callback){
     });
 }
 function FetchOnBillTotalPromo(StoreID , callback){
-    $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/FetchOnBillTotalPromo", {storeID:StoreID} , function(data, status){
+    $.get(base_url1 + "New_Terminal/POSTerminal.asmx/FetchOnBillTotalPromo", {storeID:StoreID} , function(data, status){
          console.log(JSON.stringify(data));
         callback(data);
     }).done(function(){ 
@@ -65,7 +67,7 @@ function FetchOnBillTotalPromo(StoreID , callback){
     });
 }
 function FetchOnProductPromo(StoreID , callback){
-    $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/getProductPromotion", {storeID:StoreID} , function(data, status){
+    $.get(base_url1  +  "New_Terminal/POSTerminal.asmx/getProductPromotion", {storeID:StoreID} , function(data, status){
        callback(data);
    }).done(function(){ 
        console.info(" Successfully Get the Data ");
@@ -77,7 +79,7 @@ function InsertSellsOrder(){
     // Insert Sell Order Invoice 
 }
 function insertSellOrderItemsAPI(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy ,  UpdatedBy , UpdatedOn , StoreID){
-    $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/Insert_SellsOrderItems", {SellsOrderId : SellsOrderId  ,ProductId : ProductId , Dim:Dim  , PromoRemark : PromoRemark  , Qty: Qty  ,Price: Price , Discount1 : Discount1  ,  Discount2 : Discount2 , SellingPrice : SellingPrice , TotalPrice : TotalPrice ,  Remark : Remark,  AddedBy : AddedBy ,  UpdatedBy : UpdatedBy, UpdatedOn : UpdatedOn , StoreID : StoreID} , function(data, status){
+    $.get(base_url1 +  "New_Terminal/POSTerminal.asmx/Insert_SellsOrderItems", {SellsOrderId : SellsOrderId  ,ProductId : ProductId , Dim:Dim  , PromoRemark : PromoRemark  , Qty: Qty  ,Price: Price , Discount1 : Discount1  ,  Discount2 : Discount2 , SellingPrice : SellingPrice , TotalPrice : TotalPrice ,  Remark : Remark,  AddedBy : AddedBy ,  UpdatedBy : UpdatedBy, UpdatedOn : UpdatedOn , StoreID : StoreID} , function(data, status){
       callback(data);
    }).done(function(){
        console.info(" Successfully Insert Sells Order Items ");
@@ -96,7 +98,7 @@ function InsertBillPromoCode(){
     //Insert the Used Offer Details 
 }
 function FetchHoldValues(){
-    $.get("http://localhost:50526/New_Terminal/POSTerminal.asmx/FetchHoldInvoices",[], function(data, status){
+    $.get(base_url1 +"New_Terminal/POSTerminal.asmx/FetchHoldInvoices",[], function(data, status){
    //     console.log(data);
        callback(data);
    }).done(function(){ 
