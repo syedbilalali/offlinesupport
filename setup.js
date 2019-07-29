@@ -125,7 +125,7 @@ function onlineActivity(){
         window.CurrentTax = value;
     });
     window.Products.length = 0;
-    getProductImage1();
+    getProductImage2();
     sendSellsOrderItemtoServer();
 }
 function offlineActivity(){ 
@@ -758,7 +758,8 @@ $(document).ready(function(){
         div.style.backgroundColor = "red";
         alert(" Current Net Status is " + check);
         console.log(" Get Product Images ");
-        getProductImage1();
+        getProductImage2();
+        getProductPics();
         console.log("Get Bill Offers Into DB  ");
         FetchBillOffersFromOnline();
         console.log(" Get Product Promo Data ");
@@ -775,7 +776,7 @@ $(document).ready(function(){
 });
 /*************** End Of the Main Program ********************/
 
-/************** Page Functionality  ************************/
+/************** Page Funcstionality  ************************/
 function setProductInfo(ItemList){
     
     //Product Info..
@@ -783,8 +784,10 @@ function setProductInfo(ItemList){
     document.getElementById('lblPrice').innerText = ItemList.LabelPrice;
     document.getElementById('lblStock').innerText = ItemList.PurQty;
     document.getElementById('lblDiscount').innerText = ItemList.Discount;
-    document.getElementById('lblUOM').innerText = ItemList.UOM
-    document.getElementById('prodImage').src = ItemList.ImgURL;
+    document.getElementById('lblUOM').innerText = ItemList.UOM;
+     getImageURLFROMDB(ItemList.ImgURL , function(uri){
+        document.getElementById('prodImage').src = uri;
+    });
 }
 function setInitialRow(){
     if(sessionStorage){
@@ -916,6 +919,49 @@ function removeAllRow(){
 
     }
     setEmptyRow();
+}
+function getImageURLFROMDB1(Image_Name){
+    console.log(" Getting Image from the DB  getImageURLFROMDB");
+    var img ="";
+    readAll("ProductPics" , function(data){
+        console.log("Inside the getImaeg  ");
+        console.log(data);
+        if(data.target.Key ===  Image_Name ){
+            console.log(" Comparison Image " + Image_Name);
+            console.log(" Get Specific Image  " + data.target.Key);
+            var URL = window.URL || window.webkitURL;
+            // Create and revoke ObjectURL
+            img = URL.createObjectURL(data.target.result);
+            
+        }
+    });
+    console.log(" Img URL ");
+    console.log(img);
+    return img;
+}
+function getImageURLFROMDB(Image_Name , callback){
+    console.log(" Getting Image from the DB  getImageURLFROMDB");
+    console.log(" Image Name " + Image_Name );
+    var img ="";
+   // readAll("ProductPics" , function(data){
+     //   console.log("Inside the getImaeg  ");
+       // console.log(data);
+       // if(data.target.Key ===  Image_Name ){
+         //   console.log(" Comparison Image " + Image_Name);
+          //  console.log(" Get Specific Image  " + data.target.Key);
+           // var URL = window.URL || window.webkitURL;
+            // Create and revoke ObjectURL
+          //  img = URL.createObjectURL(data.target.result);
+            
+      //  }
+    //});
+    read("ProductPics", Image_Name , function(data){
+        console.log("Image Data is ");
+        console.log(data);
+        var URL = window.URL || window.webkitURL;
+        // Create and revoke ObjectURL
+         callback(URL.createObjectURL(data));
+    })
 }
 function uniqueNumber() {
     var date = Date.now();
@@ -1504,10 +1550,11 @@ function getProductImage1(){
         var obj = getProductImage(104 , function(data){ 
         var data =  JSON.parse(data);
         for(var i=0 ; i<data.length; i++){
-
-            getImageFromServer("img/prodImages/" , data[i].image ).then(function(data){ 
+            getImageFromServer("img/prodImages/" , data[i].image ).then(function(data){
                 console.log("Image Data Inside Promise ");
-                console.log(data);  
+                console.log(data);
+              //  console.log(" Sells Order Items " + data[i].SellsOrderItemID);
+              //  console.log(" Data Length " + data.length);
                 productImage[i] = { SellsOrderItemID : data[i].SellsOrderItemID , productID : data[i].productID , ProductName : data[i].ProductName ,unitOfMeasurement : data[i].unitOfMeasurement,
                     Qty : data[i].Qty , Price : data[i].Price  , image : data[i].image , size : data[i].size , Discount : data[i].Discount  , MaxValue : data[i].MaxValue , Quantity : data[i].Quantity , 
                     IsReturn: data[i].IsReturn, IsDraft: data[i].IsDraft, IsQtyTxtOn: data[i].IsQtyTxtOn , IsDiscImgOn  : data[i].IsDiscImgOn 
@@ -1518,12 +1565,61 @@ function getProductImage1(){
                     console.log(" Successfully Save Images");
                 } , function(event){
                     console.log(" Something went wrong !!!");
-                });;
+                });
              } , 
              function(status){ console.log(" Status " + status) });
-          
         }
      });
+}
+function getProductImage2(){
+    console.log("Getting Product Images.... ");
+    var  productImage  = []; 
+        var obj = getProductImage(104 , function(data){ 
+        var data =  JSON.parse(data);
+        for(var i=0 ; i<data.length; i++){
+            productImage[i] = { SellsOrderItemID : data[i].SellsOrderItemID , productID : data[i].productID , ProductName : data[i].ProductName ,unitOfMeasurement : data[i].unitOfMeasurement,
+                Qty : data[i].Qty , Price : data[i].Price  , image : data[i].image , size : data[i].size , Discount : data[i].Discount  , MaxValue : data[i].MaxValue , Quantity : data[i].Quantity , 
+                IsReturn: data[i].IsReturn, IsDraft: data[i].IsDraft, IsQtyTxtOn: data[i].IsQtyTxtOn , IsDiscImgOn  : data[i].IsDiscImgOn  
+            };
+            Products[i] = { productID : data[i].productID , ProductName : data[i].ProductName };
+            console.log("Database Connection is ");
+            console.log(window.db);
+            add(window.db,"ProductImage", productImage[i]);
+        }
+        });
+}
+function getProductPics(){
+    console.log(" Getting Product Image Into the DB ");
+    console.log(" Window DB " + window.db);
+    readAll("ProductImage" , function(data){
+        console.log("Reading the Date of the Product Image form the Database" + data.image);
+        var image_name = data.image;
+        getImageFromServer("img/prodImages/" , data.image ).then(function(data){
+                console.log(" Get Image" + data.image + " Image -: ");
+                console.log(data);
+                var URL = window.URL || window.webkitURL;
+
+                // Create and revoke ObjectURL
+                var imgURL = URL.createObjectURL(data);
+                console.meme("Not sure if memes in dev tools is stupid", "or disastrous.", "Not Sure Fry", 400, 300);
+                console.log(" Image URL " + imgURL);
+                console.image(imgURL);
+                console.image("http://i.imgur.com/hv6pwkb.png");
+                    console.image("http://i.imgur.com/hv6pwkb.png");
+                console.image("http://i.imgur.com/hv6pwkb.png");
+                console.image("http://i.imgur.com/hv6pwkb.png");
+                // Set img src to ObjectURL
+              var imgElephant = document.getElementById("prodImage");
+              imgElephant.setAttribute("src", imgURL);
+              addImage("ProductPics",image_name ,data).then( function(event){ 
+                console.log(" Successfully Save Images");
+            } , function(event){
+                console.log(" Something went wrong !!!");
+            });
+
+        } , function(){});
+    });
+    console.log(" End of the getting Image.. ");
 }
 function checkProdOffer(productID , callback){
 

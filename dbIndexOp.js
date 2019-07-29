@@ -25,6 +25,7 @@ request.onsuccess = function(event) {
 request.onupgradeneeded = function(event) {
 
    var db = event.target.result;
+   window.db = event.target.result;
    var objectStore = db.createObjectStore('ProductImage', { keyPath: 'productID'});
    objectStore.createIndex("ProductName", "ProductName", { unique: false });
    var OfferStore = db.createObjectStore('BillOffers' , { keyPath: 'ID'}  );
@@ -126,14 +127,17 @@ function readAll(tablename , callback) {
        }
     };
 }
-function readAll(tablename){
+function readAll1(tablename){
    var objectStore = window.db.transaction(tablename).objectStore(tablename);
 
     objectStore.openCursor().onsuccess = function(event) {
        var cursor = event.target.result;
        var rp = new Promise(function(reject , resolve){
             if(cursor){
-
+               resolve(cursor.value);
+               cursor.continue();
+            }else {
+               
             }
        });
        if (cursor) {
@@ -150,6 +154,9 @@ function readAll(tablename){
 
     }
 }
+function _readAll(tablename){
+
+}
 function addImage(tablename , key, data){
    var request =  window.db.transaction([tablename], "readwrite").objectStore(tablename).put(data , key);
    var mp = new Promise(function(resolve  , reject){
@@ -161,6 +168,7 @@ function addImage(tablename , key, data){
          reject(event);
      }
    });
+   return mp;
 }
 function add(dbs, tablename , data) {
     console.log(" Parameter DB ");
