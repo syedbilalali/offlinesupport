@@ -1,5 +1,4 @@
 console.log(" Initialisation of Indexdb ");
-
 //Current Browser IndexedDB
  var db = null; 
    window.indexedDB = window.indexedDB || window.mozIndexedDB ||  window.webkitIndexedDB || window.msIndexedDB;
@@ -111,6 +110,7 @@ function readKeyRange(tablename, callback, indexname , valuearray) {
    }
 }
 function readAll(tablename , callback) {
+   
    console.log(" Current DB  is ");
    console.log(window.db);
     var objectStore = window.db.transaction(tablename).objectStore(tablename);
