@@ -70,7 +70,7 @@ function FetchOnProductPromo(StoreID , callback){
     $.get(base_url1  +  "New_Terminal/POSTerminal.asmx/getProductPromotion", {storeID:StoreID} , function(data, status){
        callback(data);
    }).done(function(){ 
-       console.info(" Successfully Get the Data ");
+   //    console.info(" Successfully Get the Data ");
       }).fail(function(){ 
       console.warn("Error");       
    });
@@ -79,13 +79,46 @@ function InsertSellsOrder(){
     // Insert Sell Order Invoice 
 }
 function insertSellOrderItemsAPI(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy ,  UpdatedBy , UpdatedOn , StoreID){
-    $.get(base_url1 +  "New_Terminal/POSTerminal.asmx/Insert_SellsOrderItems", {SellsOrderId : SellsOrderId  ,ProductId : ProductId , Dim:Dim  , PromoRemark : PromoRemark  , Qty: Qty  ,Price: Price , Discount1 : Discount1  ,  Discount2 : Discount2 , SellingPrice : SellingPrice , TotalPrice : TotalPrice ,  Remark : Remark,  AddedBy : AddedBy ,  UpdatedBy : UpdatedBy, UpdatedOn : UpdatedOn , StoreID : StoreID} , function(data, status){
+    $.post(base_url1 +  "New_Terminal/POSTerminal.asmx/Insert_SellsOrderItems", {SellsOrderId : SellsOrderId  ,ProductId : ProductId , Dim:Dim  , PromoRemark : PromoRemark  , Qty: Qty  ,Price: Price , Discount1 : Discount1  ,  Discount2 : Discount2 , SellingPrice : SellingPrice , TotalPrice : TotalPrice ,  Remark : Remark,  AddedBy : AddedBy ,  UpdatedBy : UpdatedBy, UpdatedOn : UpdatedOn , StoreID : StoreID} , function(data, status){
       callback(data);
    }).done(function(){
        console.info(" Successfully Insert Sells Order Items ");
       }).fail(function(){ 
         console.warn(" Error ");      
    });
+}
+function insertSellsOrderItemsAPI1(SellsOrderId  ,ProductId , Dim , PromoRemark , Qty ,Price , Discount1  ,  Discount2 , SellingPrice , TotalPrice ,  Remark ,  AddedBy ,  UpdatedBy , UpdatedOn , StoreID){
+    var InvoiceList = {};
+    InvoiceList.SellsOrderId = SellsOrderId;
+    InvoiceList.Dim =  Dim;
+    InvoiceList.PromoRemark = PromoRemark;
+    InvoiceList.Qty = Qty;
+    InvoiceList.Price = Price ;
+    InvoiceList.Discount1  = Discount1 ;
+    InvoiceList.Discount2 = Discount2 ;
+    InvoiceList.SellingPrice = SellingPrice ;
+    InvoiceList.TotalPrice = TotalPrice ;
+    InvoiceList.Remark = Remark ;
+    InvoiceList.AddedBy = AddedBy ;
+    InvoiceList.UpdatedBy = UpdatedBy ;
+    InvoiceList.UpdatedOn = UpdatedOn;
+    InvoiceList.StoreID = StoreID;
+    $.ajax({
+        url: base_url1 +  'New_Terminal/POSTerminal.asmx/Insert_SellsOrderItems',
+        method: 'post',
+         xhrFields: {cors: false},
+        data:   '{ invoice : ' + JSON.stringify(InvoiceList) + '}',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function () {
+            console.log(" Successfully Insert the Items ");
+            alert(" Insert Sells Order Items Updated ");
+
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }
 function InsertSellsOrderItems(){ 
     //Insert the SellsOrder for Each Item
@@ -98,7 +131,7 @@ function InsertBillPromoCode(){
     //Insert the Used Offer Details 
 }
 function FetchHoldValues(){
-    $.get(base_url1 +"New_Terminal/POSTerminal.asmx/FetchHoldInvoices",[], function(data, status){
+    $.post(base_url1 +"New_Terminal/POSTerminal.asmx/FetchHoldInvoices",[], function(data, status){
    //     console.log(data);
        callback(data);
    }).done(function(){ 

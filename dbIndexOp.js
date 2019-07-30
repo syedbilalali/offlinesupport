@@ -16,13 +16,12 @@ var request = window.indexedDB.open("POS_CLIENT",1.1);
 };
 request.onsuccess = function(event) {
    window.db = request.result;
-   console.log("DB Created Success: ");
-   console.log(db);
-   console.log("Window DB is ");
-   console.log(window.indexedDB);
+//   console.log("DB Created Success: ");
+ //  console.log(db);
+//   console.log("Window DB is ");
+//   console.log(window.indexedDB);
 };
 request.onupgradeneeded = function(event) {
-
    var db = event.target.result;
    window.db = event.target.result;
    var objectStore = db.createObjectStore('ProductImage', { keyPath: 'productID'});
@@ -110,7 +109,7 @@ function readKeyRange(tablename, callback, indexname , valuearray) {
    }
 }
 function readAll(tablename , callback) {
-   
+
    console.log(" Current DB  is ");
    console.log(window.db);
     var objectStore = window.db.transaction(tablename).objectStore(tablename);
@@ -146,7 +145,7 @@ function readAll1(tablename){
           callback(cursor.value);
           cursor.continue();
        } else {
-        //  alert("No more entries!");
+                  //  alert("No more entries!");
         //Data Not Found....
        }
     };
@@ -171,13 +170,13 @@ function addImage(tablename , key, data){
    return mp;
 }
 function add(dbs, tablename , data) {
-    console.log(" Parameter DB ");
-    console.log(dbs);
-    console.log(" Current DB is ");
-    console.log(window.db);
+  //  console.log(" Parameter DB ");
+   // console.log(dbs);
+   // console.log(" Current DB is ");
+  //  console.log(window.db);
     var request =  window.db.transaction([tablename], "readwrite").objectStore(tablename).put(data);
     request.onsuccess = function(event) {
-        console.log(" Data has been added to your database. ");
+    //    console.log(" Data has been added to your database. ");
     };
     request.onerror = function(event) {
         console.log("Unable to add data\r\nData is already exist in your database! ");
