@@ -70,7 +70,6 @@ function init(){
         //Load Value Into Db From  API
         //Load Product Details 
             getProductImage1();
-            getProductImage1();
             setTimeout(function(){
             } , 2000);
             FetchOnBillTotalPromo();
@@ -651,9 +650,7 @@ function validate(val){
             console.log(" Current input Html -: " + replace);
             current_row.cells[4].innerHTML = replace;
             fillPayment();
-
        }else {
-
             SweetAlert(" Please Enter Less Quantity... ");
             input.value = "0";
             var totalprice  =  parseInt(0) * parseFloat(product_price);
@@ -666,6 +663,31 @@ function validate(val){
        var totalprice  =  parseInt(0) * parseFloat(product_price);
        current_row.cells[9].innerHTML = totalprice
    }
+}
+function applyBillPromo(value){
+    var  row = value.parentNode.parentNode;
+    var promotionID  = row.cells[0].innerHTML;
+    var lblTotalAmount = document.getElementById("lblTotalAmount");
+    alert("Promotion ID "+ promotionID);
+    read("BillOffers" ,parseInt(promotionID , 10) , function(data){
+       // console.log("  Data of the Apply Bill Promo " + JSON.stringify(data));
+       if(data.PerUserApplied  > 0 ){
+         //  console.log(" Min Trans " + data.MinTrans + " Max Value " + data.MaxValue + " lblTotalAmmount " + lblTotalAmount.innerHTML);
+           if(parseFloat(lblTotalAmount.innerHTML)  >=  data.MinTrans && parseFloat(lblTotalAmount.innerHTML) <= data.MaxValue ){
+               alert(" Valid Offers Is Found >>> ");
+           if(data.IsProductFree == "YES"){
+               alert(" Add New Free Row in  the Table " + data.RelevantID);
+               getData(data.RelevantID);
+               
+           }else {
+                //Provide the Discount ...
+           }
+        }
+       }
+    });
+ //   window.AppliedProdPromo = 1
+  //  window.AppliedProdPromoID = promotionID;
+    console.log("Applying Bill Promno .... " +   promotionID);
 }
 function updateRow(selectRow){
     var table1 = document.getElementById("CartTable");
@@ -700,7 +722,7 @@ function offerClick(val){
     console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromoID);
         read("ProdOffers" ,  productID , function(data){
 
-            if(data != "No"){
+            if(data != "No"){   
                var offertable = document.getElementById("gvBillTotal");
                    for(var i=1; i<offertable.rows.length; i++){
                            offertable.deleteRow(i);
@@ -766,9 +788,7 @@ $(document).ready(function(){
         FetchBillOffersFromOnline();
         console.log(" Get Product Promo Data ");
         ProductPromoData();
-
      }else {
-
         div.style.backgroundColor = "yellow";
         console.log(" Net is offline ");
         alert(" Current Net Status is " + check);
@@ -921,6 +941,9 @@ function removeAllRow(){
 
     }
     setEmptyRow();
+}
+function checkForBillOffers(){
+
 }
 function getImageURLFROMDB1(Image_Name){
     console.log(" Getting Image from the DB  getImageURLFROMDB");
@@ -1265,6 +1288,50 @@ function clearAllFields(){
      document.getElementById("txtCashAmount").value = total;
      document.getElementById("txtCashAmount").focus();
  }
+function getBillOffers(){
+    var offersTable = document.getElementById("gvPromotionData");
+    console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromo);
+    console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromoID);
+    if(isProductInList()){
+         readAll("BillOffers" , function(value){
+            var offersTable = document.getElementById("gvPromotionData");
+             if(value != "No"){
+                for(var i=1; i<offersTable.rows.length; i++){
+                    offersTable.deleteRow(i);
+                 }
+                 var row = offersTable.insertRow(offersTable.rows.length);
+                 row.style.backgroundColor = "#FFF7E7";
+                 row.style.color = "#8C4510";
+                 var cell0 = row.insertCell(0);
+                 var cell1 = row.insertCell(1);
+                 var cell2 = row.insertCell(2);
+                 var cell3 = row.insertCell(3);
+                 var cell4 = row.insertCell(4);
+                 cell0.innerHTML = value.ID;
+                 cell1.innerHTML = value.PromoType
+                 cell2.innerHTML = value.FriendlyName;
+                 cell3.innerHTML = value.PromoCategory;
+                 if(window.AppliedProdPromo != 1  && window.AppliedProdPromoID != value.ID ){
+                    cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Apply Promo' onclick='applyBillPromo(this)' id='"+1+"' style='background-color:#FF0033;'>";  
+                 }else if(window.AppliedProdPromo == 1 && window.AppliedProdPromoID == value.ID) {
+                    cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Cancel Promo' onclick='applyBillPromo(this)' id='"+1+"' style='background-color:YELLOW;'>"; 
+                 }else {
+                    cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Wait' onclick='applyBillPromo(this)' id='"+1+"' style='background-color:GREEN;'>"; 
+                 }
+               
+                 console.log(" Offers is " + JSON.stringify(value));
+                 $('[data-popup="popup-3"]').fadeIn(350);
+             }else {
+             //    SweetAlertInfo("No Bill Offers Found !!!");
+                 }    
+             
+            });
+       // alert(" product is found ... " );
+       // 
+    } else {
+        SweetAlertWarning("Please Add Some Product !!!");
+    }            
+}
 /*************** End of Page Functionality ****************/
 
 /************** DB Operation Section 1 ********************/
@@ -1296,6 +1363,23 @@ function FetchBillOffersFromOnline(){
           add(window.db , "BillOffers", billOffers[i]);  
         }
     });
+}
+function FetchBillOffersfromDB(){
+    console.log("Get Bill Offers From DB ");
+    var offers = {};
+    readAll1("BillOffers").then(function(data){
+        console.log(" Bill Offers " + JSON.stringify(data));
+      offers.push(data);
+   }, function(data){   
+            console.log(" Something Went Wrong !!! ");
+   });
+    return offers;
+}
+function FetchBillOffersfromDB(){
+    console.log("Get Bill Offers From DB ");
+    var offers = {};
+    readAll("BillOffers");
+    return offers;
 }
 //Get CurrentTax and Set Tax
 function getCurrentTax(){
@@ -1594,13 +1678,13 @@ function getProductPics(){
                 // Create and revoke ObjectURL
                 var imgURL = URL.createObjectURL(data);
                 // Set img src to ObjectURL
-              var imgElephant = document.getElementById("prodImage");
-              imgElephant.setAttribute("src", imgURL);
-              addImage("ProductPics",image_name ,data).then( function(event){ 
+                var imgElephant = document.getElementById("prodImage");
+                imgElephant.setAttribute("src", imgURL);
+                addImage("ProductPics",image_name ,data).then( function(event){ 
             //    console.log(" Successfully Save Images");
-            } , function(event){
+                } , function(event){
                 console.log(" Something went wrong !!!");
-            });
+                });
 
         } , function(data){
             console.log(" No Images Found !!!");

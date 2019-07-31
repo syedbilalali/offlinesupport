@@ -1,6 +1,6 @@
 console.log(" Initialisation of Indexdb ");
 //Current Browser IndexedDB
- var db = null; 
+var db = null; 
    window.indexedDB = window.indexedDB || window.mozIndexedDB ||  window.webkitIndexedDB || window.msIndexedDB;
 //Set Current Database Transaction Objects 
    window.IDBTransaction = window.IDBTransaction ||  window.webkitIDBTransaction || window.msIDBTransaction;
@@ -20,7 +20,7 @@ request.onsuccess = function(event) {
  //  console.log(db);
 //   console.log("Window DB is ");
 //   console.log(window.indexedDB);
-};
+}
 request.onupgradeneeded = function(event) {
    var db = event.target.result;
    window.db = event.target.result;
@@ -42,16 +42,21 @@ function createTable(tablename , primarykey ){
   window.db.createObjectStore(tablename , {keyPath: primarykey})  
 }
 function read(tablename , dataID , callback){
-
+    console.log(" Table Name " + tablename + " ID " + dataID );
     var transaction = window.db.transaction(tablename);
+    console.log(" Transaction Object " + transaction);
     var objectStore = transaction.objectStore(tablename);
+    console.log(" Object Store ID " + objectStore);
     var request = objectStore.get(dataID);
     request.onerror = function(event) {
         alert("Unable to retrieve data from database!");
      };
      request.onsuccess = function(event) {
         // Do something with the request.result!
+        console.log(request);
+        console.log(request.result);
         if(request.result) {
+           console.log(" Data Found Is " + JSON.stringify(request.result));
            callback(request.result);
         } else {
            console.log(" Data Is Not Found.. ");
@@ -60,6 +65,7 @@ function read(tablename , dataID , callback){
      };
 }
 function read1(tablename , dataID){
+
    var transaction = window.db.transaction(tablename);
    var objectStore = transaction.objectStore(tablename);
    var request = objectStore.get(dataID);
@@ -123,35 +129,35 @@ function readAll(tablename , callback) {
        } else {
         //  alert("No more entries!");
         //Data Not Found....
+        callback("No");
        }
     };
 }
 function readAll1(tablename){
+   
    var objectStore = window.db.transaction(tablename).objectStore(tablename);
-
-    objectStore.openCursor().onsuccess = function(event) {
-       var cursor = event.target.result;
-       var rp = new Promise(function(reject , resolve){
-            if(cursor){
+   console.log(" Read Data " + objectStore);
+   var rp = null;
+   console.log(" RP " + rp);
+   objectStore.openCursor().onsuccess = function(event) {
+   console.log(" On Success " + rp);
+   console.log(event);
+   var cursor = event.target.result;
+    return new Promise(function(reject , resolve){
+      if(cursor) {
                resolve(cursor.value);
                cursor.continue();
-            }else {
-               
+            } else {
+               reject(event);
             }
-       });
-       if (cursor) {
-         // alert("Name for id " + cursor.key + " is " + cursor.value.name + ", Age: " + cursor.value.age + ", Email: " + cursor.value.email);
-         //Iterate All the json Value Here.
-          callback(cursor.value);
-          cursor.continue();
-       } else {
-                  //  alert("No more entries!");
-        //Data Not Found....
-       }
-    };
-    objectStore.openCursor().onerror = function(event){
-
-    }
+      });
+   }
+   objectStore.openCursor().onerror = function(event){
+      console.log(" On Error " + rp);
+   return  new Promise(function(reject , resolve){
+         reject(event);
+      });
+   }
 }
 function _readAll(tablename){
 
@@ -179,8 +185,8 @@ function add(dbs, tablename , data) {
     //    console.log(" Data has been added to your database. ");
     };
     request.onerror = function(event) {
-        console.log("Unable to add data\r\nData is already exist in your database! ");
-    }
+        console.log("Unable to add Data is already exist in your database! ");
+    };
  }
  function add1(db , data, callback , tablename) {
     const tx = db.transaction([tablename], "readwrite");
@@ -201,7 +207,6 @@ function remove(tablename , dataID) {
       //alert("");
     }
 }
-
 function remove1(tablename , dataID , callback) {
    var request = db.transaction([tablename], "readwrite").objectStore(tablename).delete(dataID);
    request.onsuccess = function(event) {
@@ -251,19 +256,20 @@ function update(tablename , dataID , value){
       }
    }
 }
-function getProductImageFromDB(db , tablename){
+function getProductImageFromDB(db , tablename)  {
     var objectStore = db.transaction(tablename).objectStore(tablename);
     var data = [];
     objectStore.openCursor().onsuccess = function(event) {
        var cursor = event.target.result;
        if (cursor) {
-          console.log(" Data is the " + cursor);
-         data.push({ productID : cursor.value.productID , productName : cursor.value.productName });
-          cursor.continue();
+            console.log(" Data is the " + cursor);
+            data.push({ productID : cursor.value.productID , productName : cursor.value.productName });
+            cursor.continue();
+
        } else {
-        console.log(" Data is the " + cursor);
-       data.push({ productID : "" , productName : "Sorry No Product Found.." });
+            console.log(" Data is the " + cursor);
+            data.push({ productID : "" , productName : "Sorry No Product Found.." });
        }
-    };
-    return data;
+    }
+   return data;
 }
