@@ -694,7 +694,7 @@ function applyBillPromo(btn){
             // console.log("  Data of the Apply Bill Promo " + JSON.stringify(data));
             if(data.PerUserApplied  > 0 ){
               //  console.log(" Min Trans " + data.MinTrans + " Max Value " + data.MaxValue + " lblTotalAmmount " + lblTotalAmount.innerHTML);
-                if(parseFloat(lblTotalAmount.innerHTML)  >=  data.MinTrans && parseFloat(lblTotalAmount.innerHTML) <= data.MaxValue ){
+                if(parseFloat(lblTotalAmount.innerHTML)  >=  data.MinTrans  && parseFloat(lblTotalAmount.innerHTML) <= data.MaxValue ){
                    // alert(" Valid Offers Is Found >>> ");
                 if(data.IsProductFree == "YES"){
                   //  alert(" Add New Free Row in  the Table " + data.RelevantID);
@@ -1778,8 +1778,8 @@ function getProductPics(){
                 // Create and revoke ObjectURL
                 var imgURL = URL.createObjectURL(data);
                 // Set img src to ObjectURL
-                var imgElephant = document.getElementById("prodImage");
-                imgElephant.setAttribute("src", imgURL);
+               // var imgElephant = document.getElementById("prodImage");
+               // imgElephant.setAttribute("src", imgURL);
                 addImage("ProductPics",image_name ,data).then( function(event){ 
             //    console.log(" Successfully Save Images");
                 } , function(event){
