@@ -85,14 +85,14 @@ function init(){
                  }
              }))},
            select :function(event , ui){
-           getData(ui.item.value); 
+           getData(ui.item.value , false); 
         },
         minLength: 1
     });
     $("#txtSearch").keyup(function(event) {
         if (event.keyCode === 13) {
             $("#txtSearch").click();
-            getData(txtSearch.value); 
+            getData(txtSearch.value , false); 
         }
     });
     $("#ddlCSV").change(function(){
@@ -135,7 +135,7 @@ function offlineActivity(){
     console.log(" Now Net is Offline");
     loadProductFromDB();
 }
-function getData( ProductID ){
+function getData( ProductID , freeproduct){
    // alert(" Get Data -: " + ProductID);
     read("ProductImage" , ProductID , function(result){ 
         console.log(" ProductName is " + result.ProductName  + " Product ID " + result.productID );
@@ -156,7 +156,7 @@ function getData( ProductID ){
         checkProdOffer(y.ItemCode , function(flag){ 
             console.log("Is ProdUct Offer Avail -:"  + flag); 
             console.log(" Avail Qty " + y.Quantity  + " Putting Qty " + y.PurQty);
-            setDummyRow(y , flag);
+            setDummyRow(y , flag , freeproduct);
             updateRow();
             fillPayment();
         });       
@@ -246,7 +246,7 @@ function setHeader1(Products){
        row.style.fontWeight  = "Bold";
    }
 }
-function setDummyRow(ItemList , discOffer){
+function setDummyRow(ItemList , discOffer , freeproduct){
     console.log(" %c Product is Adding... " , "color:BLUE;");
     removeEmptyRow();
     var table1 = document.getElementById("CartTable");
@@ -255,10 +255,8 @@ function setDummyRow(ItemList , discOffer){
     console.log("Prod Flag Value -: " + addprodflag);
     if(table1.rows.length > 1) {
         for(var i=1; i<table1.rows.length; i++){
-
             console.log(" %c Row " , "color:BLUE;");
             console.log(" Value is " + table1.rows[i].cells[1].innerHTML);
-
             if(table1.rows[i].cells[1].innerHTML == ItemList.ItemCode){
 
                 var str = table1.rows[i].cells[4].innerHTML;
@@ -308,23 +306,41 @@ function setDummyRow(ItemList , discOffer){
         var cell9 = row.insertCell(8);
         var cell10 = row.insertCell(9);
         var cell11 = row.insertCell(10);
-        cell1.innerHTML = table1.rows.length -1 ;
-        cell2.innerHTML = ItemList.ItemCode;
-        cell3.innerHTML = ItemList.ItemName;
-        cell4.innerHTML = ItemList.UOM;
-        cell5.innerHTML =  "<input type='numbers' id='qty_"+ table1.rows.length+"' onchange='validate(this)' value='1' style='width:50px;'>" + "<b>/</b><span id='spanqty_"+ table1.rows.length+"'>" + ItemList.Quantity + "</span>";
-        cell6.innerHTML = ItemList.LabelPrice;
-        if(discOffer){
-           disc = "<input type='image' id='img_" + table1.rows.length +"' name='imagebutton'  data-popup-open='popup-3' onclick='offerClick(this);'  src='img/img/discount.png' style='height:20px;width:20px;'>";
-        }else{
-            disc = "";
+        if(freeproduct){
+
+            cell1.innerHTML = table1.rows.length -1 ;
+            cell2.innerHTML = ItemList.ItemCode;
+            cell3.innerHTML = ItemList.ItemName;
+            cell4.innerHTML = ItemList.UOM;
+            cell5.innerHTML =  "<input type='numbers' id='qty_"+ table1.rows.length+"' onchange='validate(this)' value='1' style='width:50px;'>" + "<b>/</b><span id='spanqty_"+ table1.rows.length+"'>" + ItemList.Quantity + "</span>";
+            cell6.innerHTML = "0.00";
+            cell7.innerHTML = "<span id='disc_"+ table1.rows.length +"'> Free </span>";
+            cell8.innerHTML = "0.00";
+            cell9.innerHTML =  "0.00";
+            cell10.innerHTML = "0.00";
+            var cur_row  =  table1.rows.length - 1;
+            cell11.innerHTML =  "<input type='image' name='imagebutton' src='img/img/Remove.png' style='height:20px;width:20px;' onclick='removeRow("+ cur_row  +")'>";
+        } else {
+
+            cell1.innerHTML = table1.rows.length -1 ;
+            cell2.innerHTML = ItemList.ItemCode;
+            cell3.innerHTML = ItemList.ItemName;
+            cell4.innerHTML = ItemList.UOM;
+            cell5.innerHTML =  "<input type='numbers' id='qty_"+ table1.rows.length+"' onchange='validate(this)' value='1' style='width:50px;'>" + "<b>/</b><span id='spanqty_"+ table1.rows.length+"'>" + ItemList.Quantity + "</span>";
+            cell6.innerHTML = ItemList.LabelPrice;
+            if(discOffer){
+               disc = "<input type='image' id='img_" + table1.rows.length +"' name='imagebutton'  data-popup-open='popup-3' onclick='offerClick(this);'  src='img/img/discount.png' style='height:20px;width:20px;'>";
+            }else{ 
+                disc = "";
+            }
+            cell7.innerHTML = "<span id='disc_"+ table1.rows.length +"'>"+ ItemList.Discount1 +"</span>" + disc;
+            cell8.innerHTML = "0.00";
+            cell9.innerHTML =  ItemList.PurQty * ItemList.LabelPrice;
+            cell10.innerHTML = ItemList.PurQty * ItemList.LabelPrice;
+            var cur_row  =  table1.rows.length - 1;
+            cell11.innerHTML =  "<input type='image' name='imagebutton' src='img/img/Remove.png' style='height:20px;width:20px;' onclick='removeRow("+ cur_row  +")'>";
         }
-        cell7.innerHTML = "<span id='disc_"+ table1.rows.length +"'>"+ ItemList.Discount1 +"</span>" + disc;
-        cell8.innerHTML = "0.00";
-        cell9.innerHTML =  ItemList.PurQty * ItemList.LabelPrice;
-        cell10.innerHTML = ItemList.PurQty * ItemList.LabelPrice;
-        var cur_row  =  table1.rows.length - 1;
-        cell11.innerHTML =  "<input type='image' name='imagebutton' src='img/img/Remove.png' style='height:20px;width:20px;' onclick='removeRow("+ cur_row  +")'>";
+      
     }
 }
 var prodOffers = [];
@@ -484,7 +500,8 @@ function applyProductPromo(data){
         }
     });
     }else{
-         alert(" Cancel the Promotion ... ");
+
+        alert(" Cancel the Promotion ... ");
         read("ProdOffers", productID1 , function(data){
             console.log(" Apply Promotion Offers Values -: " + JSON.stringify(data));
             prodOffers.push(JSON.stringify(data));
@@ -664,29 +681,115 @@ function validate(val){
        current_row.cells[9].innerHTML = totalprice
    }
 }
-function applyBillPromo(value){
-    var  row = value.parentNode.parentNode;
+function applyBillPromo(btn){
+
+    var  row = btn.parentNode.parentNode;
     var promotionID  = row.cells[0].innerHTML;
     var lblTotalAmount = document.getElementById("lblTotalAmount");
-    alert("Promotion ID "+ promotionID);
-    read("BillOffers" ,parseInt(promotionID , 10) , function(data){
-       // console.log("  Data of the Apply Bill Promo " + JSON.stringify(data));
-       if(data.PerUserApplied  > 0 ){
-         //  console.log(" Min Trans " + data.MinTrans + " Max Value " + data.MaxValue + " lblTotalAmmount " + lblTotalAmount.innerHTML);
-           if(parseFloat(lblTotalAmount.innerHTML)  >=  data.MinTrans && parseFloat(lblTotalAmount.innerHTML) <= data.MaxValue ){
-               alert(" Valid Offers Is Found >>> ");
-           if(data.IsProductFree == "YES"){
-               alert(" Add New Free Row in  the Table " + data.RelevantID);
-               getData(data.RelevantID);
-               
-           }else {
-                //Provide the Discount ...
-           }
-        }
-       }
-    });
- //   window.AppliedProdPromo = 1
-  //  window.AppliedProdPromoID = promotionID;
+    var txtTotalPay = document.getElementById("txtTotalPay");
+    var totalDiscount = document.getElementById("lblTotalDiscount");
+  //  alert("Promotion ID "+ promotionID);
+    if(btn.value == "Apply Promo"){
+        read("BillOffers" ,parseInt(promotionID , 10) , function(data){
+            // console.log("  Data of the Apply Bill Promo " + JSON.stringify(data));
+            if(data.PerUserApplied  > 0 ){
+              //  console.log(" Min Trans " + data.MinTrans + " Max Value " + data.MaxValue + " lblTotalAmmount " + lblTotalAmount.innerHTML);
+                if(parseFloat(lblTotalAmount.innerHTML)  >=  data.MinTrans && parseFloat(lblTotalAmount.innerHTML) <= data.MaxValue ){
+                   // alert(" Valid Offers Is Found >>> ");
+                if(data.IsProductFree == "YES"){
+                  //  alert(" Add New Free Row in  the Table " + data.RelevantID);
+                    getData(data.RelevantID, true);
+                 //  alert(" Apply Promo Name " +  data.FriendlyName );
+                   var btnApply = row.cells[4].getElementsByTagName('input')[0];
+                   btnApply.style.backgroundColor = "YELLOW";
+                   btnApply.value = "Cancel Promo";
+                   console.log(" Value is the " + btn);
+                   row.cells[4].appendChild(btn);
+                   window.AppliedProdPromo = 1;
+                   window.AppliedProdPromoID = data.ID;
+                    
+                }else {
+                     //Provide the Discount ...
+                  //   alert(" Apply Promo Name " + data.FriendlyName);
+                     var seconddistotal = 0.00;
+                     var discountprice = (parseFloat(lblTotalAmount.innerHTML) * parseFloat(data.Discount)) / 100;
+                     var actualPrice  = parseFloat(lblTotalAmount.innerHTML) - discountprice;
+                     seconddistotal = discountprice;
+                     console.log(" Discount Price " + discountprice); 
+                     if(parseFloat(data.Discount2) > 0){
+                         discountprice = ((actualPrice * parseFloat(data.Discount2)) / 100);
+                         actualPrice = actualPrice - discountprice;
+                         seconddistotal += discountprice;
+                     }
+                     var finalprice = actualPrice.toFixed(2);
+                     lblTotalAmount.innerHTML = finalprice;
+                     txtTotalPay.innerHTML = finalprice;
+                     totalDiscount.innerHTML = seconddistotal.toFixed(2);
+                     var btnApply = row.cells[4].getElementsByTagName('input')[0];
+                     btnApply.style.backgroundColor = "YELLOW";
+                     btnApply.value = "Cancel Promo";
+                     console.log(" Value is the " + btn);
+                     row.cells[4].appendChild(btn);
+                     window.AppliedProdPromo = 1;
+                     window.AppliedProdPromoID = data.ID;
+     
+                }
+             }
+            }
+         });
+
+    } else{
+      //  alert(" Cancel Bill Promotion.. ");
+        read("BillOffers" ,parseInt(promotionID , 10) , function(data){
+            // console.log("  Data of the Apply Bill Promo " + JSON.stringify(data));
+            if(data.PerUserApplied  > 0 ){
+              //  console.log(" Min Trans " + data.MinTrans + " Max Value " + data.MaxValue + " lblTotalAmmount " + lblTotalAmount.innerHTML);
+                //    alert(" Valid Offers Is Found >>> ");
+                if(data.IsProductFree == "YES"){
+                      //  alert(" Add New Free Row in  the Table " + data.RelevantID);
+                      // getData(data.RelevantID);
+                 //   alert(" Apply Promo Name " +  data.FriendlyName);
+                    var table1 = document.getElementById("CartTable");
+                    var prod_row = table1.rows;
+                    console.log(" Table Row Length  " +  prod_row.length)
+                    for(var i=1; i<prod_row.length; i++){
+                        console.log("Name  " + prod_row[i].cells[6].innerText);
+                        if(prod_row[i].cells[6].innerText == "Free"){
+                            removeRow(i);
+                            break;
+                        }                       
+                    }
+                    var btnApply = row.cells[4].getElementsByTagName('input')[0];
+                    btnApply.style.backgroundColor = "#FF0033";
+                    btnApply.value = "Apply Promo";
+                    console.log(" Value is the " + btn);
+                    row.cells[4].appendChild(btn);
+                    window.AppliedProdPromo = 0;
+                    window.AppliedProdPromoID = 0;
+                    
+                }else {
+                     //Provide the Discount ...
+                   //  alert(" Apply Promo Name " + data.FriendlyName);
+                     var distotalAmount = parseFloat( lblTotalAmount.innerHTML);
+                     var discountAmt =  parseFloat(totalDiscount.innerHTML);
+                    console.log(" Dis Total Amt  " + distotalAmount);
+                    console.log(" Dis  " + discountAmt);
+                     var finalprice = (distotalAmount + discountAmt);
+                     lblTotalAmount.innerHTML = finalprice.toFixed(2);
+                     txtTotalPay.innerHTML = finalprice;
+                     totalDiscount.innerHTML = "0.00";
+                     var btnApply = row.cells[4].getElementsByTagName('input')[0];
+                     btnApply.style.backgroundColor = "#FF0033";
+                     btnApply.value = "Apply Promo";
+                     console.log(" Value is the " + btn);
+                     row.cells[4].appendChild(btn);
+                     window.AppliedProdPromo = 0;
+                     window.AppliedProdPromoID = 0;
+     
+                }
+             }
+         });
+    }
     console.log("Applying Bill Promno .... " +   promotionID);
 }
 function updateRow(selectRow){
@@ -697,7 +800,7 @@ function removeRow(item){
     var table1 = document.getElementById("CartTable");
     var row = table1.rows;
     if(row.length > 0 ){
-        SweetAlertSuccess(" Item Removed Successfully..    ");
+       // SweetAlertSuccess(" Item Removed Successfully..    ");
         document.getElementById("CartTable").deleteRow(item);
         updateRow();
         if(row.length==1){
@@ -800,7 +903,6 @@ $(document).ready(function(){
 
 /************** Page Funcstionality  ************************/
 function setProductInfo(ItemList){
-    
     //Product Info..
     document.getElementById('lblProductName').innerText = ItemList.ProductName;
     document.getElementById('lblPrice').innerText = ItemList.LabelPrice;
@@ -1289,16 +1391,18 @@ function clearAllFields(){
      document.getElementById("txtCashAmount").focus();
  }
 function getBillOffers(){
+
     var offersTable = document.getElementById("gvPromotionData");
-    console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromo);
-    console.log(" AppliedProdPrmomo -:"  + window.AppliedProdPromoID);
     if(isProductInList()){
+        console.log(" Bill Offers Table Length  " + offersTable.rows.length);
+        for(var i=offersTable.rows.length - 1; i>0; i--){
+                   offersTable.deleteRow(i);
+                   console.log("Rows Deleted" + i);
+         }
+         console.log(" Bill Offers After Del Table Length  " + offersTable.rows.length);
          readAll("BillOffers" , function(value){
-            var offersTable = document.getElementById("gvPromotionData");
+
              if(value != "No"){
-                for(var i=1; i<offersTable.rows.length; i++){
-                    offersTable.deleteRow(i);
-                 }
                  var row = offersTable.insertRow(offersTable.rows.length);
                  row.style.backgroundColor = "#FFF7E7";
                  row.style.color = "#8C4510";
@@ -1311,6 +1415,8 @@ function getBillOffers(){
                  cell1.innerHTML = value.PromoType
                  cell2.innerHTML = value.FriendlyName;
                  cell3.innerHTML = value.PromoCategory;
+                 console.log("AppliedProdPromo  " + window.AppliedProdPromo );
+                 console.log("AppliedProdPromo ID " + window.AppliedProdPromoID );
                  if(window.AppliedProdPromo != 1  && window.AppliedProdPromoID != value.ID ){
                     cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Apply Promo' onclick='applyBillPromo(this)' id='"+1+"' style='background-color:#FF0033;'>";  
                  }else if(window.AppliedProdPromo == 1 && window.AppliedProdPromoID == value.ID) {
@@ -1318,16 +1424,10 @@ function getBillOffers(){
                  }else {
                     cell4.innerHTML = "<input type='submit' name='applyBillPrdouctPromo' value='Wait' onclick='applyBillPromo(this)' id='"+1+"' style='background-color:GREEN;'>"; 
                  }
-               
                  console.log(" Offers is " + JSON.stringify(value));
                  $('[data-popup="popup-3"]').fadeIn(350);
-             }else {
-             //    SweetAlertInfo("No Bill Offers Found !!!");
-                 }    
-             
+             }   
             });
-       // alert(" product is found ... " );
-       // 
     } else {
         SweetAlertWarning("Please Add Some Product !!!");
     }            
@@ -1356,7 +1456,7 @@ function FetchBillOffersFromOnline(){
         var offers  = JSON.parse(data);
         console.log(" Bill Offers " + JSON.stringify(data));
         for(var i=0; i<offers.length; i++){
-            console.log(" Friendly Name " + offers[i].FriendlyName );
+            console.log(" Friendly Name " + offers[i].FriendlyName ); 
             console.log(" Promo Code " + offers[i].PromoCode);
           billOffers[i] = { ID : offers[i].ID, FriendlyName : offers[i].FriendlyName , PromoCode : offers[i].PromoCode , PromoType  : offers[i].PromoType , DiscountType : offers[i].DiscountType , Discount : offers[i].Discount , AddedOn : offers[i].AddedOn , ExpiredOn: offers[i].ExpiredOn , IsActive : offers[i.IsActive] , MaxValue : offers[i].MaxValue , MinTrans : offers[i].MinTrans , PerUserApplied : offers[i].PerUserApplied , IsAllProducts : offers[i].IsAllProducts , IsTotalPurchasePromo : offers[i].IsTotalPurchasePromo , PromoCategory : offers[i].PromoCategory , SpecialPrice : offers[i].SpecialPrice , RelevantID : offers[i].RelevantID , Discount2 : offers[i].Discount2  , IsProductFree : offers[i].IsProductFree }; 
           console.log(" Bill Offers Value is  " + JSON.stringify(billOffers[i]));
@@ -1421,7 +1521,7 @@ function retrivalRertive(response){
     var val = cur_row.cells[0].innerHTML;
         readAll("SellsOrderItems" , function(data){
           if(data.SellsOrderId == val ){
-                getData(data.ProductId);
+                getData(data.ProductId , false);
                 $('[data-popup="popup-5"]').fade(350);
           }
     })
