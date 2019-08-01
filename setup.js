@@ -1,4 +1,5 @@
 /************Page Initial Operation ************/
+
 function init(){
 
     console.log(" Intialisation... ");
@@ -307,7 +308,6 @@ function setDummyRow(ItemList , discOffer , freeproduct){
         var cell10 = row.insertCell(9);
         var cell11 = row.insertCell(10);
         if(freeproduct){
-
             cell1.innerHTML = table1.rows.length -1 ;
             cell2.innerHTML = ItemList.ItemCode;
             cell3.innerHTML = ItemList.ItemName;
