@@ -153,6 +153,8 @@ function getData( ProductID , freeproduct){
             Quantity : result.Quantity,
             ImgURL :  result.image
         }
+       // alert(" Add Product TO the Cart ... " + y.PurQty);
+       if(y.Quantity != 0 && y.Quantity > 0){
         setProductInfo(y);
         checkProdOffer(y.ItemCode , function(flag){ 
             console.log("Is ProdUct Offer Avail -:"  + flag); 
@@ -160,7 +162,8 @@ function getData( ProductID , freeproduct){
             setDummyRow(y , flag , freeproduct);
             updateRow();
             fillPayment();
-        });       
+        }); 
+    } else { SweetAlertInfo(" No Stock Available !!! "); }      
     });
 }
 function deleteTableRows(){
@@ -1183,7 +1186,7 @@ function clearAllFields(){
      var checkbox = document.getElementById("Chk_Cash");
      if(checkbox.checked == true){ 
         var table1 = document.getElementById("CartTable");
-
+        var txtCashAmmount = document.getElementById("txtCashAmount");
     if(table1.rows.length > 1){
         console.log("Value is -: " + table1.rows[1].cells[0].innerHTML);
         if(table1.rows[1].cells[0].innerHTML != "No Products Added.."){
@@ -1202,6 +1205,8 @@ function clearAllFields(){
              count4 = 0; 
              total = 0;
              var lblCashCount  = document.getElementById("lblCashCount");
+             var txtCashAmmount = document.getElementById("txtCashAmount");
+             txtCashAmmount.readOnly = false;
              lblCashCount.innerHTML = 0;
             $('[data-popup="popup-1"]').fadeIn(350);
         }else {
@@ -1212,6 +1217,9 @@ function clearAllFields(){
         console.log(" Product is Not found ... ");
     }
     }else {
+        var txtCashAmmount = document.getElementById("txtCashAmount");
+        txtCashAmmount.value  = "";
+        txtCashAmmount.readOnly = true;  
     }
     fillPayment();
  }
@@ -1287,7 +1295,8 @@ function clearAllFields(){
  }
  function setCashTrans(){
 
-     alert(" Current Cash Chnages");
+     //alert(" Current Cash Chnages");
+     console.log(" Cash Changes !!! ");
      lblCashAmt.value  = totol;
  }
  function OnPay(){
@@ -1376,15 +1385,13 @@ function clearAllFields(){
      var productID =   $('txtSearch').innerText;
      $('txtSearch').value  = "";
  }
- function chngCashManually(){
-     
-    document.getElementById('Chk_Cash').checked = true;
+ function chngCashManually(){ 
+     document.getElementById('Chk_Cash').checked = true;
      $('[data-popup="popup-1"]').fadeOut(350);
      document.getElementById("txtCashAmount").focus();
      document.getElementById("txtCashAmount").select();
  }
  function chngCashSet(){
-
      document.getElementById('Chk_Cash').checked = true;
      $('[data-popup="popup-1"]').fadeOut(350);
      document.getElementById("txtCashAmount").value = total;
@@ -1401,7 +1408,6 @@ function getBillOffers(){
          }
          console.log(" Bill Offers After Del Table Length  " + offersTable.rows.length);
          readAll("BillOffers" , function(value){
-
              if(value != "No"){
                  var row = offersTable.insertRow(offersTable.rows.length);
                  row.style.backgroundColor = "#FFF7E7";
@@ -1527,8 +1533,15 @@ function retrivalRertive(response){
     })
     console.log("---------End Retrive--------------");
 }
-function setCashTrans(){
-    alert(" Hello World... ");
+function setCashTrans(cash){
+
+    var cashAmout = document.getElementById('lblTotalPayment');
+    alert(" Hello World... " + cash.value);
+    var new_CashAmount = parseFloat(cash.value + "");
+    alert(" Parse Value " + new_CashAmount);
+    cashAmout.innerHTML = new_CashAmount.toFixed(2);
+    console.log(cash);
+
 }
 function deleteTableRow( tabelname , startIndex , endIndex ){
     var table1 = document.getElementById(tabelname);
@@ -1567,10 +1580,10 @@ function SaveProductImage(StoreID ){
     //Fetch Product Image and Save To Local Indexed DB
     var  productImage  = []; 
     var obj = getProductImage(StoreID , function(data){ 
-    var data =  JSON.parse(data);
-    for(var i=0 ; i<data.length;  i++){
+        var data =  JSON.parse(data);
+        for(var i=0 ; i<data.length;  i++){
 
-        productImage[i] = { 
+            productImage[i] = { 
             SellsOrderItemID : data[i].SellsOrderItemID , 
             productID : data[i].productID , 
             ProductName : data[i].ProductName ,
@@ -1586,11 +1599,11 @@ function SaveProductImage(StoreID ){
             IsDraft: data[i].IsDraft, 
             IsQtyTxtOn: data[i].IsQtyTxtOn , 
             IsDiscImgOn  : data[i].IsDiscImgOn  
-        };
-        Products[i] = { productID : data[i].productID , ProductName : data[i].ProductName };
-        //Add to DB
-        add(window.indexedDB,"ProductImage", productImage[i]);
-    }
+            };
+            Products[i] = { productID : data[i].productID , ProductName : data[i].ProductName };
+            //Add to DB
+            add(window.indexedDB,"ProductImage", productImage[i]);
+        }
     });
 }
 //Get Product Details FROm DB TO ARRAY
