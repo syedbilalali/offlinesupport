@@ -108,7 +108,7 @@ function init(){
             txtCustomerID.disabled = true;
         }
     });
-    window.txtTransactionID.text = uniqueNumber();
+    window.txtTransactionID.text = makeid(9);
     var txtDate = document.getElementById('txtDate');
     var date = new Date();
     txtDate.value = toJSONLocal(date);
@@ -1104,11 +1104,21 @@ function uniqueNumber() {
     return date;
 }
 uniqueNumber.previous = 0;
+function makeid(l)
+{
+    var text = "";
+    var char_list = "0123456789";
+    for(var i=0; i < l; i++ )
+        {  
+            text += char_list.charAt(Math.floor(Math.random() * char_list.length));
+        }
+    return text;
+}
 function clearAllFields(){
 
     //Set Customer
     txtCashAmount.value = "0";
-    txtTransactionID.value = uniqueNumber();
+    txtTransactionID.value =  makeid(9);
     //SerachBox
     txtSearch.innerHTML = "";
     //Product Fields 
@@ -1217,6 +1227,7 @@ function clearAllFields(){
         console.log(" Product is Not found ... ");
     }
     }else {
+
         var txtCashAmmount = document.getElementById("txtCashAmount");
         txtCashAmmount.value  = "";
         txtCashAmmount.readOnly = true;  
@@ -1281,6 +1292,8 @@ function clearAllFields(){
                 console.log("Click" + count);
                 var lblspan = document.getElementById('lblCount500');
                 var button = document.getElementById(elem.id);
+                var cashAmt = document.getElementById("lblCashAmt");
+                var totalPaymt = document.getElementById("lblCashAmt");
                 button.onclick = function(){
                     count4 += 1;
                     var value = parseFloat(button.value);
@@ -1289,6 +1302,9 @@ function clearAllFields(){
                     total += sum;
                     lblspan.innerHTML = count4;
                     lblCashCount.innerHTML = total;
+                    cashAmt.innerHTML = total;
+                    totalPaymt.innerHTML = total; 
+
                 }
             break;
     }
@@ -1314,6 +1330,7 @@ function clearAllFields(){
          var pur_Qty = table1.rows[i].cells[4].innerHTML;
          var LabelPrice = table1.rows[i].cells[5].innerHTML;
          var Discount1 = table1.rows[i].cells[6].innerHTML;
+
          var Discount2 = table1.rows[i].cells[7].innerHTML;
          var SellingPrice = table1.rows[i].cells[8].innerHTML;
          var TotalPrice = table1.rows[i].cells[9].innerHTML;
@@ -1340,7 +1357,7 @@ function clearAllFields(){
      var Status=0;
      var StoreID =0;
      var TerminalID=0;
-     InsertSellsOrder("" , txtCustomerID.text , total , total_tax,VoucherDiscount , TotalDiscount ,PaymentModeCharge , TotalPay , Remark, AddedBy , CustomerTransaction , "1" , "1", "104", "2323443" );
+     InsertSellsOrder(SellsOrderId, txtCustomerID.text , total , total_tax,VoucherDiscount , TotalDiscount ,PaymentModeCharge , TotalPay , Remark, AddedBy , CustomerTransaction , "1" , "1", "104", "2323443" );
      SweetAlertInfo(" Sucessfully Paid...  ");
      console.log("----------- End Payment Section --------------");
  }
